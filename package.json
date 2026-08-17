@@ -10,8 +10,9 @@
     "check": "astro check",
     "qa:shots": "node scripts/shoot.mjs",
     "qa:check": "node scripts/check.mjs",
-    "qa": "npm run build && npm run check && node scripts/check.mjs",
-    "preview:single": "node scripts/bundle-single-file.mjs dist preview/planet-auto-preview.html"
+    "qa": "npm run build && npm run check && node scripts/check.mjs && node scripts/check-motion.mjs",
+    "preview:single": "node scripts/bundle-single-file.mjs dist preview/planet-auto-preview.html",
+    "qa:motion": "node scripts/check-motion.mjs"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.3.0",

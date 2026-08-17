@@ -8,7 +8,7 @@ données et sans serveur.
 npm install
 npm run dev             # http://localhost:4321
 npm run build           # -> dist/
-npm run qa              # build + typecheck + 28 tests fonctionnels
+npm run qa              # build + typecheck + 28 tests + 9 tests d’animation
 npm run preview:single  # aperçu en un seul fichier HTML
 ```
 
@@ -118,7 +118,8 @@ src/
   lib/hours.js         ← formatage horaires + openingHoursSpecification
   layouts/Layout.astro ← <head>, SEO, JSON-LD LocalBusiness
   components/          ← Hero, Services, WhyUs, Reviews, Location, Contact…
-  scripts/main.ts      ← GSAP, Lenis, menu, badge ouvert/fermé
+  scripts/main.ts      ← GSAP, Lenis, menu, badge ouvert/fermé, carte
+  scripts/motion.ts    ← animations
   styles/global.css    ← tokens de design
 brand/
   logo-source.png      ← artwork d'origine, source de la vectorisation
@@ -127,6 +128,7 @@ scripts/
   preview-logo.mjs     ← rendu PNG du logo
   shoot.mjs            ← captures + audit
   check.mjs            ← tests fonctionnels
+  check-motion.mjs     ← tests des animations
   bundle-single-file.mjs ← aperçu autonome en un fichier
 ```
 
@@ -144,12 +146,32 @@ que le visiteur demande la carte (motif « clic-pour-charger » recommandé par 
 CNIL). Le site n'a toujours besoin d'aucun bandeau de consentement, et un test
 le vérifie à chaque passage.
 
-**Aucun appel réseau externe.** Polices auto-hébergées, images converties en
-WebP au build. ~270 kB transférés, JS compris.
+**Aucun appel réseau externe au chargement.** Polices auto-hébergées, images converties en
+WebP au build. ~350 à 480 kB transférés selon la largeur, JS compris.
 
 **Le site fonctionne sans JavaScript.** Les éléments animés au scroll sont
 visibles par défaut ; GSAP ne fait que les révéler. `prefers-reduced-motion`
-désactive Lenis et toutes les animations.
+court-circuite `initMotion()` en entier et désactive Lenis.
+
+## Animations
+
+`src/scripts/motion.ts`. Chaque routine part de l'état de repos de la page,
+donc sans JS rien n'est masqué ni déplacé.
+
+| Ce qui bouge | Pourquoi |
+|---|---|
+| La roue du logo tourne au chargement, puis d'un demi-tour au survol | Le mark **est** une roue. Seul le groupe de la spirale tourne, l'anneau reste fixe — sinon ce n'est plus une roue dans une orbite. Pas de rotation en boucle : ça tirerait l'œil hors du texte et garderait une couche compositor éveillée. |
+| La bande cramoisie se déploie depuis la gauche | Elle vient du bandeau peint de l'auvent, elle se pose comme un trait de peinture. |
+| La photo du hero se dévoile en balayage | Même direction que la bande juste en dessous. |
+| Les photos de section défilent en parallaxe | ±4 % seulement. L'image doit être agrandie de plus que son déplacement, et cet agrandissement **est un recadrage** : à ±4 % il coûte 9 % de la photo, à ±6 % il mangeait les bords du rayonnage. |
+| La note et le nombre d'avis se comptent | C'est la preuve la plus forte de la page. La valeur finale reste dans le HTML et n'est rembobinée qu'au déclenchement, donc les robots et les visiteurs sans JS lisent le vrai chiffre. |
+| Les listes arrivent en cascade | Les lignes de même nature forment un seul mouvement au lieu de déclencher chacune la sienne, ce qui bégayait le long de la colonne. |
+| Le point « ouvert » pulse | Uniquement quand le garage est réellement ouvert : le mouvement porte l'état, il ne décore pas. |
+
+`scripts/check-motion.mjs` vérifie que chacune **se termine** — une animation
+qui démarre sans finir laisse du contenu invisible, ce qui est pire que pas
+d'animation du tout. Il contrôle aussi qu'en `reduced-motion` plus rien ne
+bouge, et que la parallaxe ne découvre jamais un bord.
 
 ## Dupliquer pour un autre garage
 
@@ -167,7 +189,7 @@ Puis `SITE_URL` en haut de `business.js`, et les mentions légales.
 ## QA
 
 ```bash
-npm run qa                                         # typecheck + 28 tests
+npm run qa                                         # typecheck + 28 + 9 tests
 npm run preview                                    # dans un terminal
 npm run qa:shots -- http://localhost:4321 shots    # captures + audit
 ```

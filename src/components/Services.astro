@@ -24,7 +24,7 @@ const magasin = services.filter((s) => s.slug === 'pieces');
     <div class="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-16">
       <div>
         <h3 class="label pb-4 text-ink" data-reveal>À l'atelier</h3>
-        <ul class="border-t border-rule">
+        <ul class="border-t border-rule" data-stagger>
           {atelier.map((service) => (
             <li class="flex gap-5 border-b border-rule py-6" data-reveal>
               <span class="mt-0.5 shrink-0 text-crimson">

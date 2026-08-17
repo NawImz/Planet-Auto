@@ -64,11 +64,11 @@ const openNow = isOpenAt(business.hours, new Date());
         <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-rule pt-6" data-reveal>
           <p class="flex items-center gap-2.5">
             <Stars value={rating.value} size="size-[1.05rem]" />
-            <span class="font-display text-lg font-bold text-ink">
+            <span class="font-display text-lg font-bold tabular-nums text-ink" data-count={rating.value} data-count-decimals="1">
               {rating.value.toString().replace('.', ',')}
             </span>
             <span class="text-[0.95rem] text-steel">
-              · <span class="font-semibold text-ink-soft">{rating.count} avis</span> Google
+              · <span class="font-semibold text-ink-soft"><span class="tabular-nums" data-count={rating.count}>{rating.count}</span> avis</span> Google
             </span>
           </p>
 
@@ -89,7 +89,7 @@ const openNow = isOpenAt(business.hours, new Date());
         </div>
       </div>
 
-      <div class="relative" data-reveal>
+      <div class="relative overflow-hidden" data-reveal data-hero-photo>
         <Image
           src={devanture}
           alt={`La devanture de ${business.name}, ${address.street} à ${address.city}`}

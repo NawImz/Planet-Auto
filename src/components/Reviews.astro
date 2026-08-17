@@ -16,13 +16,17 @@ const { rating } = business;
       </div>
 
       <div class="flex shrink-0 items-center gap-5" data-reveal>
-        <p class="font-display text-[3.5rem] font-extrabold leading-none tracking-tight text-ink">
+        <p
+          class="font-display text-[3.5rem] font-extrabold leading-none tracking-tight tabular-nums text-ink"
+          data-count={rating.value}
+          data-count-decimals="1"
+        >
           {rating.value.toString().replace('.', ',')}
         </p>
         <div class="border-l border-rule pl-5">
           <Stars value={rating.value} size="size-4" />
           <p class="mt-1.5 text-[0.95rem] text-steel">
-            <span class="font-semibold text-ink">{rating.count} avis</span> Google
+            <span class="font-semibold text-ink"><span class="tabular-nums" data-count={rating.count}>{rating.count}</span> avis</span> Google
           </p>
         </div>
       </div>

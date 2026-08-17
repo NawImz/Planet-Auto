@@ -104,7 +104,38 @@ const vb = [
 ];
 const aspect = (vb[2] / vb[3]).toFixed(4);
 
-process.stderr.write(`viewBox recadré : ${vb.join(' ')}  (ratio ${aspect})\n`);
+/*
+  Centre of the wheel, for the spin. Taken from the steel mask alone, ignoring
+  the columns the orbit sweeps through on either side: the ring is far wider
+  than the wheel, so including it would drag the pivot off to the left and the
+  spiral would wobble rather than turn.
+*/
+const colHasSteel = new Array(width).fill(false);
+const rowHasSteel = new Array(height).fill(false);
+const steelPerCol = new Array(width).fill(0);
+for (let i = 0, p = 0; i < data.length; i += channels, p++) {
+  if (classify(data[i], data[i + 1], data[i + 2]) !== 'grey') continue;
+  const x = p % width;
+  const y = (p / width) | 0;
+  steelPerCol[x]++;
+  colHasSteel[x] = true;
+  rowHasSteel[y] = true;
+}
+// Only columns densely filled with steel belong to the disc; the ring's thin
+// anti-aliased edge leaves a handful of pixels per column.
+const peak = Math.max(...steelPerCol);
+const dense = steelPerCol.map((n) => n > peak * 0.25);
+const wheelX0 = dense.indexOf(true);
+const wheelX1 = dense.lastIndexOf(true);
+const wheelY0 = rowHasSteel.indexOf(true);
+const wheelY1 = rowHasSteel.lastIndexOf(true);
+const wheelCx = Math.round((wheelX0 + wheelX1) / 2);
+const wheelCy = Math.round((wheelY0 + wheelY1) / 2);
+
+process.stderr.write(
+  `viewBox recadré : ${vb.join(' ')}  (ratio ${aspect})\n` +
+    `centre de la roue : ${wheelCx},${wheelCy}\n`
+);
 
 process.stderr.write(
   `gris : ${grey.paths.length} tracé(s), ${grey.count} px\n` +
@@ -139,7 +170,18 @@ const { class: className = 'w-12', title } = Astro.props;
   aria-hidden={title ? undefined : 'true'}
   aria-label={title}
 >
-  <g fill="var(--logo-steel, #6f7b89)" fill-rule="evenodd">
+  <!--
+    The spiral is its own group so it can be spun independently of the orbit —
+    rotating the whole svg would carry the ring round with it, which is not what
+    a wheel does. transform-box: view-box makes the origin below resolve in
+    viewBox units rather than the element's own bounding box.
+  -->
+  <g
+    data-logo-wheel
+    fill="var(--logo-steel, #6f7b89)"
+    fill-rule="evenodd"
+    style="transform-origin: ${wheelCx}px ${wheelCy}px; transform-box: view-box"
+  >
 ${grey.paths.map((d) => `    <path d="${d}" />`).join('\n')}
   </g>
   <g fill="var(--logo-ring, #d81f26)" fill-rule="evenodd">

@@ -23,7 +23,7 @@ import Icon from './Icon.astro';
           s'engage à tenir.
         </p>
 
-        <div class="relative mt-10" data-reveal>
+        <div class="relative mt-10 overflow-hidden" data-reveal data-parallax>
           <Image
             src={boutique}
             alt="Le rayon outillage du magasin : clés, tournevis et coffrets sur panneau perforé, et derrière la porte les casiers de pièces détachées"
@@ -37,7 +37,7 @@ import Icon from './Icon.astro';
       </div>
 
       <div class="lg:pt-3">
-        <dl class="border-t border-rule">
+        <dl class="border-t border-rule" data-stagger>
           {benefits.map((benefit) => (
             <div class="border-b border-rule py-7" data-reveal>
               <dt class="font-display text-[1.4rem] font-bold leading-snug">{benefit.title}</dt>

@@ -153,6 +153,27 @@
     background: var(--color-crimson);
   }
 
+  /*
+    The open indicator breathes only while the garage is actually open, so the
+    movement carries the state rather than decorating it. Slow and low contrast
+    — it sits next to the rating, which is what should hold the eye.
+  */
+  [data-open-badge][data-open='true'] [data-open-dot] {
+    animation: open-pulse 2.6s ease-in-out infinite;
+  }
+
+  @keyframes open-pulse {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.55;
+      transform: scale(0.82);
+    }
+  }
+
   .label {
     font-family: var(--font-display);
     font-size: 0.75rem;

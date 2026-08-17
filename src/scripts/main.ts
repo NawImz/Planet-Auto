@@ -194,45 +194,6 @@ if (menuToggle && mobileNav) {
 }
 
 /* ------------------------------------------------------------------ *
- * Click-to-load map
- *
- * A Google Maps iframe sets cookies the moment it is in the document, which
- * would oblige the site to carry a consent banner. Nothing is embedded until
- * the visitor asks for it. Without JS the panel keeps its "open in Google Maps"
- * link, so the address is never a dead end.
- * ------------------------------------------------------------------ */
-
-const mapPanel = document.querySelector<HTMLElement>('[data-map]');
-
-if (mapPanel) {
-  const loadButton = mapPanel.querySelector<HTMLButtonElement>('[data-map-load]');
-  const fallbackLink = mapPanel.querySelector<HTMLAnchorElement>('[data-map-fallback]');
-
-  // The button is hidden in the markup and revealed here: with JS off it would
-  // do nothing, and a control that does nothing is worse than no control.
-  loadButton?.classList.remove('hidden');
-  loadButton?.classList.add('inline-flex');
-  fallbackLink?.classList.add('text-sm', 'text-steel');
-
-  /*
-    No attempt is made to detect a refused embed. A blocked iframe and a loaded
-    one are indistinguishable from script — both fire `load`, both report
-    contentDocument as null — because cross-origin isolation is meant to hide
-    exactly that. So the design stops depending on it: the "open in Google Maps"
-    link lives outside the frame and stays put, and an empty embed costs the
-    visitor a link they can already see rather than their only way through.
-  */
-  loadButton?.addEventListener('click', () => {
-    const iframe = document.createElement('iframe');
-    iframe.src = mapPanel.dataset.mapSrc ?? '';
-    iframe.title = mapPanel.dataset.mapTitle ?? 'Carte';
-    iframe.referrerPolicy = 'no-referrer-when-downgrade';
-    iframe.className = 'absolute inset-0 size-full border-0';
-    mapPanel.replaceChildren(iframe);
-  });
-}
-
-/* ------------------------------------------------------------------ *
  * Open / closed badge
  *
  * Rendered at build time, so a cached page would otherwise show a stale state.

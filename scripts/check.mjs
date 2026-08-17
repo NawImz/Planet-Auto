@@ -127,41 +127,44 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PAT
   await ctx.close();
 }
 
-/* ---------- map: nothing loads before consent ---------- */
+/* ---------- map ---------- */
 {
   const ctx = await browser.newContext({ viewport: { width: 1000, height: 900 } });
   const page = await ctx.newPage();
-  const thirdParty = [];
+  const adTrackers = [];
   page.on('request', (r) => {
-    if (/google|gstatic|doubleclick/.test(r.url())) thirdParty.push(r.url());
+    if (/google-analytics|doubleclick|googletagmanager|maps\.google/.test(r.url())) {
+      adTrackers.push(r.url());
+    }
   });
 
   await page.goto(BASE, { waitUntil: 'networkidle' });
   await page.waitForTimeout(500);
 
-  // The whole point of click-to-load: no Google request, so no cookie, so no
-  // consent banner. A regression here is a legal problem, not a visual one.
+  // OpenStreetMap can load with the page because it carries no advertising
+  // cookie. A Google embed creeping back in would silently oblige a consent
+  // banner, so its absence is asserted rather than assumed.
   check(
-    'carte : aucune requête Google avant le clic',
-    thirdParty.length === 0,
-    thirdParty.slice(0, 2).join(', ')
-  );
-  check('carte : pas d’iframe au chargement', !(await page.$('[data-map] iframe')));
-
-  const link = await page.getAttribute('[data-map-fallback]', 'href');
-  check(
-    'carte : lien de secours vers Google Maps présent',
-    !!link?.startsWith('https://www.google.com/maps/'),
-    link?.slice(0, 40)
+    'carte : aucun embed publicitaire',
+    adTrackers.length === 0,
+    adTrackers.slice(0, 2).join(', ')
   );
 
-  await page.click('[data-map-load]');
-  await page.waitForTimeout(400);
   const src = await page.getAttribute('[data-map] iframe', 'src');
   check(
-    'carte : le clic charge l’embed adressé par nom + adresse',
-    !!src?.includes('output=embed') && !!src?.includes('Planet'),
-    src?.slice(0, 46)
+    'carte : embed OpenStreetMap présent au chargement',
+    !!src?.startsWith('https://www.openstreetmap.org/export/embed.html'),
+    src?.slice(0, 52)
+  );
+  check('carte : un marqueur est posé', !!src?.includes('marker='));
+
+  // Directions go through a text search, so they stay exact even while the
+  // stored coordinates are approximate.
+  const link = await page.getAttribute('[data-map-fallback]', 'href');
+  check(
+    'itinéraire : recherche par nom et adresse, pas par coordonnées',
+    !!link?.includes('query=Planet') && !link?.includes('@'),
+    link?.slice(0, 44)
   );
   await ctx.close();
 }

@@ -35,9 +35,12 @@ disent explicitement recommander) et valent 5. À vérifier sur la fiche Google.
 ### 3. Renseigner les coordonnées GPS
 
 `business.address.lat` / `.lng` sont **approximatives** — elles n'ont pas pu
-être géocodées. Plus rien d'affiché n'en dépend : la carte, l'itinéraire et
-Waze passent tous par une requête texte. Elles ne servent plus qu'au champ
-`geo` du JSON-LD, que Google recoupe avec sa propre fiche.
+être géocodées, aucun service de géocodage n'étant joignable depuis
+l'environnement de développement.
+
+**Le marqueur de la carte en dépend directement** : tant qu'elles ne sont pas
+corrigées, le point peut être décalé de quelques centaines de mètres. Les
+boutons d'itinéraire, eux, restent exacts (recherche par nom et adresse).
 
 Pour les corriger : fiche Google Maps → clic droit sur le marqueur → copier les
 coordonnées.
@@ -134,17 +137,24 @@ scripts/
 
 ## Autres choix techniques
 
-**Carte en clic-pour-charger.** L'embed OpenStreetMap ne prend qu'une boîte
-englobante : il ne pouvait être juste que si `address.lat`/`lng` l'étaient, or
-elles n'ont pas pu être géocodées. L'embed Google, lui, accepte une requête
-texte et résout la fiche lui-même, donc le point est bon quelles que soient les
-coordonnées stockées.
+**Carte OpenStreetMap, affichée d'emblée.** Elle ne porte pas de cookie
+publicitaire, donc elle peut se charger avec la page sans imposer de bandeau de
+consentement — ce qu'un embed Google exigerait. Un test vérifie à chaque
+passage qu'aucun embed publicitaire ne se glisse en remplacement.
 
-En contrepartie une iframe Google dépose des cookies dès qu'elle entre dans le
-document. Elle n'est donc pas chargée : le panneau reste statique jusqu'à ce
-que le visiteur demande la carte (motif « clic-pour-charger » recommandé par la
-CNIL). Le site n'a toujours besoin d'aucun bandeau de consentement, et un test
-le vérifie à chaque passage.
+Son inconvénient : l'embed OSM ne prend qu'une boîte englobante, donc **le
+marqueur ne vaut que ce que valent `address.lat`/`lng`**, aujourd'hui
+approximatives. Les boutons « Itinéraire » et « Waze » ne s'appuient pas
+dessus : ils passent par une recherche nom + adresse, qui résout la vraie fiche
+dans l'application du visiteur. Les indications routières sont donc exactes
+même pendant que le point est approché.
+
+L'adresse est écrite **derrière** le cadre de la carte : un hôte qui refuse
+l'iframe laisse alors les coordonnées du garage à l'écran plutôt qu'un carré
+gris. Détecter ce refus n'est pas possible — une iframe bloquée et une iframe
+chargée sont indiscernables depuis le script (même événement `load`, même
+`contentDocument` à `null`), l'isolation cross-origin existant précisément
+pour ça.
 
 **Aucun appel réseau externe au chargement.** Polices auto-hébergées, images converties en
 WebP au build. ~350 à 480 kB transférés selon la largeur, JS compris.

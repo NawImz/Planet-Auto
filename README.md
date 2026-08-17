@@ -8,7 +8,7 @@ données et sans serveur.
 npm install
 npm run dev             # http://localhost:4321
 npm run build           # -> dist/
-npm run qa              # build + typecheck + 23 tests fonctionnels
+npm run qa              # build + typecheck + 26 tests fonctionnels
 npm run preview:single  # aperçu en un seul fichier HTML
 ```
 
@@ -16,33 +16,28 @@ npm run preview:single  # aperçu en un seul fichier HTML
 
 ## ⚠️ À faire avant la mise en ligne
 
-### 1. Remplacer les textes d'avis
+### 1. Remettre les mentions légales
 
-`src/config/business.js` contient quatre avis dont le champ `text` est un
-**gabarit de mise en page**, pas un vrai avis. Les noms « Isma B. » et
-« Johanna Correa » viennent du brief, mais les phrases ont été rédigées pour
-caler la maquette — ces personnes n'ont jamais écrit ça.
+**La page a été supprimée à la demande du client pour la phase de test.** Elle
+doit être rétablie avant toute mise en ligne : les mentions d'identification de
+l'éditeur et de l'hébergeur sont obligatoires (art. 6-III de la loi LCEN
+n°2004-575). Il faut la forme juridique, le SIRET, le n° de TVA, le directeur
+de la publication, et les coordonnées de l'hébergeur.
 
-Publier de faux avis, ou attribuer des propos inventés à des clients nommés,
-est une pratique commerciale trompeuse (art. L121-2 et suivants du Code de la
-consommation) et expose à une sanction DGCCRF.
+L'ancienne page est récupérable dans l'historique git.
 
-1. Ouvrir la fiche Google Business Profile du garage.
-2. Copier le **libellé exact** de quatre avis, avec le nom affiché.
-3. Remplacer `text`, `author` et `rating` dans `reviews`.
-4. Passer `reviewsVerified` à `true`.
+### 2. Remplacer le numéro WhatsApp de test
 
-Tant que `reviewsVerified` vaut `false`, un bandeau d'avertissement s'affiche
-sur la section Avis et le balisage `schema.org/Review` est **omis** du JSON-LD,
-pour ne pas déclarer de faux témoignages à Google. La note agrégée 4,6/251,
-elle, est réelle et reste déclarée.
+`contact.whatsapp` contient `33767898694`, un numéro fourni pour tester. À
+remplacer par la ligne réellement consultée par le garage.
 
-### 2. Ouvrir un canal écrit (ou décider qu'il n'y en a pas)
+### 3. Confirmer les notes en étoiles des avis
 
-Voir « Le bloc message » plus bas. Par défaut le site n'affiche **aucun
-formulaire** : `contact.whatsapp` et `contact.email` sont à `null`.
+Les quatre avis sont le libellé exact transmis par le client, mais les notes
+n'accompagnaient pas les textes : elles sont déduites du contenu (les quatre
+disent explicitement recommander) et valent 5. À vérifier sur la fiche Google.
 
-### 3. Vérifier les coordonnées GPS
+### 4. Vérifier les coordonnées GPS
 
 `business.address.lat` / `.lng` sont **approximatives** — elles n'ont pas pu
 être géocodées. Elles ne servent qu'à cadrer la carte et le champ `geo` du
@@ -51,13 +46,6 @@ utilisent une requête textuelle qui résout correctement quoi qu'il arrive.
 
 Pour les corriger : fiche Google Maps → clic droit sur le marqueur → copier les
 coordonnées.
-
-### 4. Compléter les mentions légales
-
-`src/pages/mentions-legales.astro` porte des `[À COMPLÉTER]` : forme juridique,
-SIRET, TVA, directeur de la publication, hébergeur. Obligatoire (art. 6-III de
-la LCEN). La page existe pour que le lien du footer ne soit pas un 404 ; elle
-n'est pas conforme en l'état.
 
 ### 5. Confirmer les horaires et les marques
 
@@ -123,9 +111,9 @@ Le comportement dépend de `contact` dans `business.js` :
 
 | Configuration | Ce que voit le visiteur |
 |---|---|
-| `whatsapp: '336…'` | Un formulaire qui **compose un message WhatsApp** et l'ouvre sur le téléphone du garage. |
+| `whatsapp: '336…'` *(état actuel)* | Un formulaire qui **compose un message WhatsApp** et l'ouvre sur le téléphone du garage. |
 | `email: '…@…'` | Le même formulaire, qui ouvre l'application mail du visiteur, pré-remplie. |
-| les deux à `null` *(état actuel)* | Pas de formulaire : un encart qui renvoie au téléphone et au comptoir. |
+| les deux à `null` | Pas de formulaire : un encart qui renvoie au téléphone et au comptoir. |
 
 Le numéro WhatsApp s'écrit indicatif + numéro, chiffres uniquement, sans `+` ni
 espaces : `06 12 34 56 78` devient `33612345678`.
@@ -183,7 +171,7 @@ Puis `SITE_URL` en haut de `business.js`, et les mentions légales.
 ## QA
 
 ```bash
-npm run qa                                         # typecheck + 23 tests
+npm run qa                                         # typecheck + 26 tests
 npm run preview                                    # dans un terminal
 npm run qa:shots -- http://localhost:4321 shots    # captures + audit
 ```

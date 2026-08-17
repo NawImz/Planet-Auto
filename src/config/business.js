@@ -79,7 +79,9 @@ export const business = {
  * spaces: 06 12 34 56 78 in France becomes '33612345678'.
  */
 export const contact = {
-  whatsapp: null,
+  // Numéro de test fourni par le client — à remplacer par la ligne WhatsApp
+  // réelle du garage avant mise en ligne.
+  whatsapp: '33767898694',
   email: null,
 };
 
@@ -148,49 +150,61 @@ export const brands = [
 ];
 
 /**
- * ┌──────────────────────────────────────────────────────────────────────────┐
- * │  PLACEHOLDER — NE PAS METTRE EN LIGNE EN L'ÉTAT                           │
- * │                                                                          │
- * │  Les textes ci-dessous sont des EXEMPLES DE MISE EN PAGE. Ils n'ont pas   │
- * │  été écrits par les personnes citées. Les publier tels quels constitue    │
- * │  une pratique commerciale trompeuse (art. L121-2 s. du Code de la         │
- * │  consommation) et expose à une sanction DGCCRF.                           │
- * │                                                                          │
- * │  AVANT PUBLICATION : remplacer chaque `text` par le libellé exact de      │
- * │  l'avis Google correspondant, et chaque `author` par le nom tel qu'il     │
- * │  apparaît sur la fiche. Voir README « Récupérer les vrais avis ».         │
- * │                                                                          │
- * │  Tant que `verified` vaut false, un bandeau d'avertissement s'affiche     │
- * │  sur la section Avis en développement, et le balisage schema.org des      │
- * │  avis est omis (on ne déclare pas de faux avis à Google).                 │
- * └──────────────────────────────────────────────────────────────────────────┘
+ * Avis Google reproduits mot pour mot, transmis par le client.
+ *
+ * `text` doit rester le libellé exact publié sur la fiche. Un avis raccourci
+ * porte `[…]` à l'endroit de la coupe et `truncated: true` : la carte affiche
+ * alors un lien vers la fiche Google, pour que personne ne lise un extrait en
+ * croyant lire l'avis entier.
+ *
+ * Les notes en étoiles n'apparaissaient pas dans ce que le client a transmis.
+ * Elles sont déduites du texte — les quatre disent explicitement recommander —
+ * et restent à confirmer sur la fiche.
  */
-export const reviewsVerified = false;
+export const reviewsVerified = true;
+
+/** Lien vers la fiche Google, pour lire les avis en entier. */
+export const reviewsUrl =
+  'https://www.google.com/maps/search/?api=1&query=' +
+  encodeURIComponent('Planet Auto, 80 avenue de la République, 93800 Épinay-sur-Seine');
 
 export const reviews = [
   {
-    author: 'Isma B.',
-    rating: 5,
-    text: "[TEXTE À REMPLACER PAR L'AVIS GOOGLE RÉEL] Avis mis en avant pour la réactivité de l'équipe.",
-    highlight: 'Réactivité',
-  },
-  {
     author: 'Johanna Correa',
     rating: 5,
-    text: "[TEXTE À REMPLACER PAR L'AVIS GOOGLE RÉEL] Avis mis en avant pour la qualité de l'accueil.",
-    highlight: 'Accueil',
+    date: 'il y a 3 semaines',
+    meta: '11 avis',
+    highlight: 'Réactivité',
+    text: "Une réactivité exemplaire ! Je suis tombé en panne de batterie et le garage m'a pris en charge immédiatement. Un immense merci au conseiller pour son accueil particulièrement chaleureux, son professionnalisme et sa rapidité. C'est tellement rare et appréciable de trouver un service aussi efficace avec des tarifs qui défient toute concurrence ! Je recommande ce garage les yeux fermés. 👏",
   },
   {
-    author: '[Nom de l’auteur]',
+    author: 'Isma B',
     rating: 5,
-    text: '[TEXTE À REMPLACER PAR L’AVIS GOOGLE RÉEL] Avis mis en avant pour les prix et le respect du devis.',
-    highlight: 'Prix tenus',
+    date: 'il y a un mois',
+    meta: '5 avis',
+    highlight: 'Prix et écoute',
+    text: "Super expérience chez Planet Auto ! L'équipe est vraiment sympa et à l'écoute, on sent que les clients sont pris au sérieux. Ma voiture a été prise en charge très rapidement, pas d'attente interminable comme ailleurs. Et niveau prix, clairement imbattable, ça change tout. Je recommande sans hésiter !",
   },
   {
-    author: '[Nom de l’auteur]',
-    rating: 4,
-    text: "[TEXTE À REMPLACER PAR L'AVIS GOOGLE RÉEL] Avis mis en avant pour le stock de pièces et le conseil.",
-    highlight: 'Stock & conseil',
+    author: 'Alyma Lagaré Officiel',
+    rating: 5,
+    date: 'il y a 2 mois',
+    meta: '2 avis',
+    highlight: 'Suivi client',
+    text: "Franchement, super expérience avec Planet Auto ! Une équipe vraiment à l'écoute, très professionnelle et surtout très gentille. On se sent accompagné du début à la fin, avec un vrai suivi, ce qui est rare aujourd'hui. Je suis ravie de mes achats, tout s'est très bien passé. Je recommande à 100% !",
+  },
+  {
+    // Raccourci : l'avis d'origine fait environ 150 mots et nomme un
+    // concurrent. Republier ce passage sur le site commercial du garage
+    // exposerait au dénigrement, ce que la fiche Google n'implique pas.
+    author: 'Meandra Pétion',
+    rating: 5,
+    date: 'il y a un mois',
+    meta: 'Local Guide · 35 avis',
+    badge: 'Local Guide',
+    highlight: 'Devis divisé par deux',
+    truncated: true,
+    text: "Après avoir fait plusieurs devis qui tournait autour de 175€ pour de la « petite mécanique » je me suis dirigé vers cette boutique pour y comparer les prix […] il m'ont fait un devis qui a été divisé de moitié, j'ai été très surprise. J'ai donc acheté les pièces et le montage a été fait sur ma petite auto dans leur garage. Merci au vendeur pour sa franchise […]",
   },
 ];
 

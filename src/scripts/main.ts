@@ -239,15 +239,18 @@ if (composeForm) {
     const value = (name: string) =>
       (composeForm.querySelector<HTMLInputElement>(`[name="${name}"]`)?.value ?? '').trim();
 
-    return [
-      'Bonjour,',
+    const details = [
       value('sujet') && `Demande : ${value('sujet')}`,
       value('vehicule') && `Véhicule : ${value('vehicule')}`,
       value('message'),
       value('nom') && `— ${value('nom')}`,
-    ]
-      .filter(Boolean)
-      .join('\n');
+    ].filter(Boolean);
+
+    // An untouched form keeps the fuller opener the no-JS link carries;
+    // rebuilding from empty fields would hand WhatsApp a bare "Bonjour,".
+    if (!details.length) return 'Bonjour, je vous contacte au sujet de ma voiture.';
+
+    return ['Bonjour,', ...details].join('\n');
   };
 
   const refresh = () => {

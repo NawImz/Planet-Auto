@@ -109,37 +109,15 @@ const iframe = html.match(/<iframe[^>]*openstreetmap[^>]*>\s*<\/iframe>/);
 if (iframe) {
   html = html.replace(
     iframe[0],
-    `<div class="flex h-[340px] w-full flex-col items-center justify-center gap-3 bg-ink-850 px-6 text-center lg:h-[420px]">
-      <svg class="size-8 text-ink-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M19 10.5c0 5-7 10.5-7 10.5s-7-5.5-7-10.5a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10.3" r="2.6"/></svg>
-      <p class="max-w-xs text-sm leading-relaxed text-chrome-400">
+    `<div class="flex h-[320px] w-full flex-col items-center justify-center gap-3 bg-paper-deep px-6 text-center lg:h-[400px]">
+      <svg class="size-8 text-steel-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M19 10.5c0 5-7 10.5-7 10.5s-7-5.5-7-10.5a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10.3" r="2.6"/></svg>
+      <p class="max-w-xs text-sm leading-relaxed text-steel">
         La carte OpenStreetMap ne s'affiche pas dans cet aperçu&nbsp;: la page est
         isolée et ne peut appeler aucun service externe. Elle s'affiche
         normalement sur le site déployé.
       </p>
     </div>`
   );
-}
-
-/* ---------- fold the legal-notices page in ---------- */
-
-// A single file has no second route, so /mentions-legales would dead-end. Pull
-// that page's <main> in as a section and rewrite the footer link to an anchor,
-// rather than shipping a preview with a link that 404s.
-try {
-  const legal = await readFile(join(DIST, 'mentions-legales', 'index.html'), 'utf8');
-  const main = legal.match(/<main[^>]*>([\s\S]*?)<\/main>/);
-  if (main) {
-    const body = main[1]
-      .replace(/\s*class="pt-28 lg:pt-36"/, '')
-      .replace(/href="\/"/g, 'href="#top"');
-    html = html.replace(
-      /<footer/,
-      `<section id="mentions-legales" class="scroll-mt-20 border-t border-ink-800">${body}</section>\n<footer`
-    );
-    html = html.replaceAll('href="/mentions-legales"', 'href="#mentions-legales"');
-  }
-} catch {
-  console.warn('  (page mentions-legales absente du build — lien laissé tel quel)');
 }
 
 /* ---------- gallery identity ---------- */

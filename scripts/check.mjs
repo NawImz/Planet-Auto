@@ -88,6 +88,41 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PAT
   await ctx.close();
 }
 
+/* ---------- message composer ---------- */
+{
+  const ctx = await browser.newContext({ viewport: { width: 900, height: 1000}, locale: 'fr-FR' });
+  const page = await ctx.newPage();
+  await page.goto(BASE, { waitUntil: 'networkidle' });
+
+  const submit = await page.$('[data-compose-submit]');
+  if (!submit) {
+    check('composeur : aucun canal configuré, rien à tester', true, 'ignoré');
+  } else {
+    const empty = await submit.getAttribute('href');
+    check(
+      'composeur : lien valide avant toute saisie',
+      /^(https:\/\/wa\.me\/\d+|mailto:)/.test(empty) && decodeURIComponent(empty).length > 30,
+      empty?.slice(0, 45)
+    );
+
+    await page.fill('#nom', 'Jean Dupont');
+    await page.fill('#vehicule', 'Clio 4 de 2015');
+    await page.selectOption('#sujet', 'Freinage');
+    await page.fill('#message', 'Bruit au freinage');
+    await page.waitForTimeout(250);
+
+    const filled = decodeURIComponent((await submit.getAttribute('href')) ?? '');
+    check(
+      'composeur : les champs saisis arrivent dans le message',
+      ['Jean Dupont', 'Clio 4 de 2015', 'Freinage', 'Bruit au freinage'].every((v) =>
+        filled.includes(v)
+      ),
+      filled.replace(/\n/g, ' | ').slice(0, 70)
+    );
+  }
+  await ctx.close();
+}
+
 /* ---------- reduced motion ---------- */
 {
   const ctx = await browser.newContext({
@@ -209,11 +244,30 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PAT
       'samedi 09:00–18:00 déclaré',
       spec.some((s) => s.dayOfWeek.includes('Sa') && s.opens === '09:00' && s.closes === '18:00')
     );
-    check(
-      'aucun faux avis déclaré tant que reviewsVerified = false',
-      data.review === undefined,
-      data.review ? `${data.review.length} avis exposés` : 'aucun'
+    // The markup must track reviewsVerified in both directions: declare the
+    // real reviews once they are real, and declare nothing while they are not.
+    const verified = await page.evaluate(
+      () => !document.querySelector('[data-placeholder-warning]')
     );
+    if (verified) {
+      check(
+        'avis vérifiés → déclarés dans le JSON-LD',
+        Array.isArray(data.review) && data.review.length > 0,
+        `${data.review?.length ?? 0} avis`
+      );
+      check(
+        'chaque avis déclaré porte auteur, note et texte',
+        (data.review ?? []).every(
+          (r) => r.author?.name && r.reviewRating?.ratingValue && r.reviewBody?.length > 20
+        )
+      );
+    } else {
+      check(
+        'avis non vérifiés → aucun avis déclaré',
+        data.review === undefined,
+        data.review ? `${data.review.length} avis exposés` : 'aucun'
+      );
+    }
   }
 
   const title = await page.title();

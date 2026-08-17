@@ -4,130 +4,113 @@ import { business } from '../config/business.js';
 import { formatRanges } from '../lib/hours.js';
 import rue from '../assets/rue-acces.jpeg';
 import Icon from './Icon.astro';
-import SectionHeading from './SectionHeading.astro';
 
 const { address, hours } = business;
 
 const fullAddress = `${address.street}, ${address.postalCode} ${address.city}`;
-// Text query, not coordinates: this resolves to the right pin on the user's
-// map app even while address.lat/lng remain unverified.
+// Text query, not coordinates: resolves to the right pin even while
+// address.lat/lng remain unverified.
 const query = encodeURIComponent(`${business.name}, ${fullAddress}`);
 const googleMaps = `https://www.google.com/maps/search/?api=1&query=${query}`;
 const waze = `https://waze.com/ul?q=${query}`;
 
-// OpenStreetMap rather than a Google Maps iframe: no API key, and no third-party
-// tracker fires before consent, so the page needs no cookie banner for the map.
+// OpenStreetMap rather than a Google Maps iframe: no API key, and no
+// third-party tracker fires before consent, so the page needs no cookie banner.
 const d = 0.006;
 const bbox = [address.lng - d, address.lat - d / 2, address.lng + d, address.lat + d / 2].join('%2C');
 const osm = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${address.lat}%2C${address.lng}`;
 ---
 
-<section id="acces" class="scroll-mt-20 border-t border-ink-800 bg-ink-900 py-section">
+<section id="acces" class="scroll-mt-20 border-t border-rule bg-paper py-section">
   <div class="mx-auto max-w-6xl px-5 lg:px-8">
-    <SectionHeading
-      eyebrow="Accès"
-      title="Où nous trouver"
-      lead="Sur l'avenue de la République, avec du stationnement devant l'atelier."
-    />
+    <div class="grid gap-12 lg:grid-cols-2 lg:gap-16">
+      <div>
+        <span class="band" data-reveal></span>
+        <h2 class="mt-5 font-display text-[clamp(1.9rem,4.5vw,2.9rem)] font-extrabold" data-reveal>
+          Venir nous voir
+        </h2>
 
-    <div class="mt-14 grid gap-10 lg:grid-cols-2 lg:gap-12">
-      <div class="flex flex-col gap-8">
-        <div>
-          <h3 class="flex items-center gap-2.5 font-display text-lg font-semibold uppercase tracking-wider text-white" data-reveal>
-            <Icon name="pin" class="size-5 text-signal-bright" />
-            Adresse
-          </h3>
-          <address class="mt-3 not-italic text-xl leading-relaxed text-chrome-100" data-reveal>
-            {address.street}<br />
-            {address.postalCode} {address.city}
-          </address>
-          <div class="mt-5 flex flex-wrap gap-3" data-reveal>
-            <a
-              href={googleMaps}
-              target="_blank"
-              rel="noopener"
-              class="inline-flex items-center gap-2 rounded-full bg-signal px-6 py-3 font-display font-semibold tracking-wide text-white transition-colors hover:bg-signal-hover"
-            >
-              <Icon name="arrow" class="size-4" />
-              Itinéraire
-            </a>
-            <a
-              href={waze}
-              target="_blank"
-              rel="noopener"
-              class="inline-flex items-center gap-2 rounded-full border border-ink-600 px-6 py-3 font-display font-medium tracking-wide text-chrome-100 transition-colors hover:border-chrome-400 hover:text-white"
-            >
-              Waze
-            </a>
-          </div>
+        <address class="mt-6 not-italic text-xl leading-relaxed text-ink" data-reveal>
+          {address.street}<br />
+          {address.postalCode} {address.city}
+        </address>
+        <p class="mt-2 text-steel" data-reveal>
+          Sur l'avenue, avec du stationnement devant l'atelier.
+        </p>
+
+        <div class="mt-6 flex flex-wrap gap-3" data-reveal>
+          <a
+            href={googleMaps}
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-2 bg-crimson px-6 py-3.5 font-display font-bold text-white transition-colors hover:bg-crimson-deep"
+          >
+            <Icon name="pin" class="size-4" />
+            Itinéraire
+          </a>
+          <a
+            href={waze}
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-2 border border-rule-strong px-6 py-3.5 font-display font-semibold text-ink transition-colors hover:border-ink"
+          >
+            Waze
+          </a>
         </div>
 
-        <div class="hairline pt-8">
-          <h3 class="flex items-center gap-2.5 font-display text-lg font-semibold uppercase tracking-wider text-white" data-reveal>
-            <Icon name="clock" class="size-5 text-signal-bright" />
-            Horaires
-          </h3>
-          <dl class="mt-4 overflow-hidden rounded-xl border border-ink-700" data-reveal>
-            {hours.map((day, i) => (
-              <div
+        <h3 class="label mt-12 border-t border-rule pt-8 text-ink" data-reveal>Horaires</h3>
+        <dl class="mt-4" data-reveal>
+          {hours.map((day) => (
+            <div class="flex items-baseline justify-between gap-4 border-b border-rule py-2.5">
+              <dt class="font-semibold text-ink">{day.day}</dt>
+              <dd
                 class:list={[
-                  'flex items-baseline justify-between gap-4 px-5 py-3',
-                  i % 2 === 0 ? 'bg-ink-850' : 'bg-ink-900',
+                  'text-right tabular-nums',
+                  day.ranges.length ? 'text-ink-soft' : 'text-steel-light',
                 ]}
-                data-day={day.dayCode}
               >
-                <dt class="font-display text-base font-medium uppercase tracking-wide text-chrome-100">
-                  {day.day}
-                </dt>
-                <dd
-                  class:list={[
-                    'text-right text-sm tabular-nums',
-                    day.ranges.length ? 'text-chrome-100' : 'text-chrome-400',
-                  ]}
-                >
-                  {formatRanges(day.ranges)}
-                </dd>
-              </div>
-            ))}
-          </dl>
-          <p class="mt-3 text-xs text-chrome-400" data-reveal>
-            Horaires à confirmer auprès du garage avant déplacement.
-          </p>
-        </div>
+                {formatRanges(day.ranges)}
+              </dd>
+            </div>
+          ))}
+        </dl>
+        <p class="mt-3 text-sm text-steel-light" data-reveal>
+          Horaires à confirmer auprès du garage avant de vous déplacer.
+        </p>
       </div>
 
       <div class="flex flex-col gap-6">
         <div data-reveal>
-          <div class="overflow-hidden rounded-2xl border border-ink-700">
+          <div class="overflow-hidden border border-rule">
             <iframe
               src={osm}
               title={`Carte : ${business.name}, ${fullAddress}`}
               loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
-              class="h-[340px] w-full border-0 lg:h-[420px]"
+              class="h-[320px] w-full border-0 lg:h-[400px]"
             ></iframe>
           </div>
-          {/* The address and both route buttons live above, so a blocked or
-              failed embed never leaves the visitor without a way to get here. */}
-          <p class="mt-2.5 text-xs text-chrome-400">
+          <p class="mt-2.5 text-sm text-steel-light">
             Carte&nbsp;: OpenStreetMap. Elle ne s'affiche pas&nbsp;?
             <a
               href={googleMaps}
               target="_blank"
               rel="noopener"
-              class="underline underline-offset-2 transition-colors hover:text-chrome-100"
+              class="underline underline-offset-2 transition-colors hover:text-ink"
             >Ouvrir l'itinéraire</a>.
           </p>
         </div>
-        <div class="overflow-hidden rounded-2xl border border-ink-700" data-reveal>
+
+        <div class="relative" data-reveal>
           <Image
             src={rue}
-            alt={`L'avenue de la République devant ${business.name}, avec la piste cyclable et le stationnement`}
+            alt="L'avenue de la République devant le garage, avec la piste cyclable et le stationnement"
             widths={[640, 1024, 1360]}
             sizes="(min-width: 1024px) 560px, 100vw"
             loading="lazy"
-            class="aspect-[16/9] w-full object-cover"
+            class="aspect-[16/10] w-full object-cover"
           />
+          <span class="absolute inset-x-0 bottom-0 h-1.5 bg-crimson" aria-hidden="true"></span>
         </div>
       </div>
     </div>

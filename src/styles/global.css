@@ -1,51 +1,50 @@
 @import 'tailwindcss';
 
-@import '@fontsource-variable/roboto-condensed';
-@import '@fontsource-variable/inter';
+@import '@fontsource-variable/archivo';
+@import '@fontsource-variable/source-sans-3';
 
 /*
-  Design tokens.
+  Design tokens, taken from the shopfront rather than invented.
 
-  Two reds, not one. No single red clears WCAG AA both as a button background
-  under white text and as accent text on the near-black page. `signal` is the
-  fill (white on it = 5.00:1), `signal-bright` is the ink (on --color-ink-950 =
-  5.55:1). Same hue family, so it reads as a single accent.
+  The sign is a white panel carrying a steel-blue turbine mark, a crimson orbit
+  ring and crimson lettering — so the site is light-ground with a steel-navy ink
+  and one crimson. The neutral is deliberately warm (the building is red brick
+  and cream stone), which keeps the paper from reading as screen-grey.
+
+  On a light ground a single crimson clears WCAG AA both ways: #C8102E is
+  5.88:1 as text on white and 5.88:1 under white text as a fill. The earlier
+  dark ground needed two reds; this one does not.
 */
 @theme {
-  --color-ink-950: #0a0b0d;
-  --color-ink-900: #111318;
-  --color-ink-850: #15181e;
-  --color-ink-800: #1a1d23;
-  --color-ink-700: #262a31;
-  --color-ink-600: #363b44;
+  --color-paper: #f5f3f0;
+  --color-paper-deep: #ebe7e2;
+  --color-surface: #ffffff;
 
-  --color-chrome-100: #e8eaed;
-  --color-chrome-300: #9ba3ae;
-  --color-chrome-400: #7c848f;
+  --color-ink: #16232e;
+  --color-ink-soft: #2e4256;
+  --color-steel: #4a5f72;
+  --color-steel-light: #5f7385;
 
-  --color-signal: #d91f35;
-  --color-signal-hover: #c8102e;
-  --color-signal-bright: #ff3b30;
+  --color-rule: #ddd8d2;
+  --color-rule-strong: #c7c1b9;
 
-  --font-display: 'Roboto Condensed Variable', ui-sans-serif, system-ui, sans-serif;
-  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --color-crimson: #c8102e;
+  --color-crimson-deep: #8a1729;
 
-  --spacing-section: 7rem;
+  --font-display: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Source Sans 3 Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --spacing-section: 6.5rem;
 }
 
 @layer base {
   :root {
-    /*
-      Height of the fixed mobile call bar. Anything that would otherwise sit
-      underneath it adds this to its bottom padding. Zero from `lg` up, where
-      the bar is not rendered — so one variable keeps the bar, the flow spacer
-      and the hero padding from drifting apart.
-
-      This literal is a deliberately generous floor for the no-JS case: the bar
-      is content-sized, so its real height moves with font metrics. main.ts
-      measures the rendered bar and overwrites this with the exact value.
-    */
+    /* Measured from the rendered bar by main.ts; this literal is the no-JS
+       floor. Zero from lg up, where the bar is not rendered. */
     --call-bar-h: calc(5.5rem + env(safe-area-inset-bottom));
+
+    /* Consumed by LogoMark so the mark can sit on dark grounds too. */
+    --logo-ring: #c8102e;
   }
 
   @media (min-width: 64rem) {
@@ -55,8 +54,6 @@
   }
 
   html {
-    scroll-behavior: smooth;
-    /* Lenis drives scrolling; disable native smooth when it is active. */
     -webkit-text-size-adjust: 100%;
   }
 
@@ -70,11 +67,12 @@
   }
 
   body {
-    background-color: var(--color-ink-950);
-    color: var(--color-chrome-100);
+    background-color: var(--color-paper);
+    color: var(--color-ink);
     font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.65;
     -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
   }
 
   h1,
@@ -82,9 +80,11 @@
   h3,
   h4 {
     font-family: var(--font-display);
-    font-weight: 600;
-    letter-spacing: -0.01em;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
     text-wrap: balance;
+    color: var(--color-ink);
   }
 
   p {
@@ -92,12 +92,11 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-signal-bright);
+    outline: 2.5px solid var(--color-crimson);
     outline-offset: 3px;
     border-radius: 2px;
   }
 
-  /* Skip link, visible only on keyboard focus. */
   .skip-link {
     position: absolute;
     left: -9999px;
@@ -108,7 +107,7 @@
     left: 1rem;
     top: 1rem;
     padding: 0.75rem 1.25rem;
-    background: var(--color-signal);
+    background: var(--color-crimson);
     color: #fff;
     font-weight: 600;
   }
@@ -116,13 +115,13 @@
 
 @layer components {
   /*
-    Scroll-reveal contract: elements marked [data-reveal] start hidden and are
-    animated in by GSAP. If JS never runs, the `no-js` fallback below keeps them
-    visible — the site must not be blank without JS.
+    Scroll-reveal contract: hidden by default, revealed by GSAP. Without JS —
+    or under prefers-reduced-motion — the fallbacks below keep everything
+    visible, so the page is never blank.
   */
   [data-reveal] {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(18px);
     will-change: opacity, transform;
   }
 
@@ -132,24 +131,29 @@
     transform: none;
   }
 
-  .eyebrow {
-    font-family: var(--font-display);
-    font-size: 0.8125rem;
-    font-weight: 600;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-signal-bright);
+  /*
+    The awning is a white panel with a crimson band running its length. That
+    band is the one borrowed ornament, used to open sections instead of an
+    accent-coloured eyebrow above every heading.
+  */
+  .band {
+    display: block;
+    width: 3.25rem;
+    height: 4px;
+    background: var(--color-crimson);
   }
 
-  .hairline {
-    border-top: 1px solid var(--color-ink-700);
+  .label {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-steel);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
   [data-reveal] {
     opacity: 1 !important;
     transform: none !important;

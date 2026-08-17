@@ -7,101 +7,101 @@ import Icon from './Icon.astro';
 import Stars from './Stars.astro';
 
 const { rating, phone, address } = business;
-// Build-time guess; open-state.ts re-evaluates against the visitor's own clock.
 const openNow = isOpenAt(business.hours, new Date());
 ---
 
-<section id="top" class="relative isolate flex min-h-[100svh] flex-col justify-end overflow-hidden">
-  <Image
-    src={devanture}
-    alt={`Devanture de ${business.name}, ${address.street} à ${address.city}`}
-    widths={[640, 1024, 1600, 2048]}
-    sizes="100vw"
-    loading="eager"
-    fetchpriority="high"
-    class="absolute inset-0 -z-20 size-full object-cover object-center"
-  />
-  <!--
-    Three scrims. The vertical one seats the text; the horizontal one keeps the
-    left column near-solid so the shop's own signage stops competing with the
-    headline; the flat wash holds contrast where the sky blows out. The photo is
-    meant to read as texture and place, not as a second logo.
-  -->
-  <div class="absolute inset-0 -z-10 bg-gradient-to-t from-ink-950 via-ink-950/90 to-ink-950/55"></div>
-  <div class="absolute inset-0 -z-10 bg-gradient-to-r from-ink-950 via-ink-950/75 to-ink-950/20"></div>
-  <div class="absolute inset-0 -z-10 bg-ink-950/25"></div>
+{/*
+  Light ground, photo beside the copy rather than under it. Text laid over a
+  darkened photograph was fighting the shop's own signage and reading as stock
+  — here the storefront gets to be itself in its own panel.
+*/}
+<section id="top" class="relative overflow-hidden bg-paper pt-24 lg:pt-28">
+  <div class="mx-auto max-w-6xl px-5 lg:px-8">
+    <div class="grid items-center gap-8 py-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-14 lg:py-14">
+      <div>
+        <!-- The long form wraps to two lines on a phone and pushes the rating
+             below the fold, so the street is only named from sm up. -->
+        <p class="label flex items-center gap-3" data-reveal>
+          <span class="band shrink-0"></span>
+          <span>
+            Épinay-sur-Seine<span class="hidden sm:inline"> · avenue de la République</span>
+          </span>
+        </p>
 
-  <!-- pb adds --call-bar-h so the last CTA never lands under the fixed mobile
-       call bar. The variable is 0 from lg up, where lg:pb-24 takes over. -->
-  <div
-    class="mx-auto w-full max-w-6xl px-5 pb-[calc(3.5rem+var(--call-bar-h))] pt-28 lg:px-8 lg:pb-24 lg:pt-32"
-  >
-    <p class="eyebrow" data-reveal>{address.city} · {address.postalCode}</p>
+        <h1
+          class="mt-6 max-w-xl font-display text-[clamp(2.4rem,6.5vw,4rem)] font-extrabold text-ink"
+          data-reveal
+        >
+          Le garage et le magasin de pièces,{' '}
+          <span class="text-crimson">au même endroit.</span>
+        </h1>
 
-    <!-- Headline stays white on purpose: red is the colour of the call button.
-         Spending it on the title too would cost the CTA its pull. -->
-    <h1
-      class="mt-4 max-w-3xl font-display text-[clamp(2.6rem,9vw,5.5rem)] font-bold uppercase leading-[0.94] tracking-[-0.02em] text-white"
-      data-reveal
-    >
-      Réparation auto<br />&amp; pièces détachées
-    </h1>
+        <p class="mt-5 max-w-lg text-lg text-steel" data-reveal>
+          On diagnostique, on répare, et la pièce est en rayon derrière le
+          comptoir. Particuliers et professionnels.
+        </p>
 
-    <p class="mt-6 max-w-lg text-lg leading-relaxed text-chrome-100 lg:text-xl" data-reveal>
-      Atelier et magasin au {address.street}. Entretien, freinage, diagnostic,
-      pneus — et les pièces en stock, pour les particuliers comme pour les pros.
-    </p>
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center" data-reveal>
+          <a
+            href={`tel:${phone.tel}`}
+            data-analytics="call-hero"
+            class="inline-flex items-center justify-center gap-3 bg-crimson px-7 py-4 font-display text-xl font-bold tracking-tight text-white transition-colors hover:bg-crimson-deep"
+          >
+            <Icon name="phone" class="size-5" />
+            {phone.display}
+          </a>
+          <a
+            href="#services"
+            class="inline-flex items-center justify-center gap-2 border border-rule-strong px-7 py-4 font-display text-lg font-semibold text-ink transition-colors hover:border-ink"
+          >
+            Ce qu'on fait
+            <Icon name="arrow" class="size-4" />
+          </a>
+        </div>
 
-    <!-- Social proof sits above the fold, before the CTA: the rating is what
-         earns the tap on the call button. -->
-    <div class="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3" data-reveal>
-      <div class="flex items-center gap-3">
-        <Stars value={rating.value} size="size-5" />
-        <span class="font-display text-2xl font-bold leading-none text-white">
-          {rating.value.toString().replace('.', ',')}
-        </span>
-        <span class="text-sm text-chrome-300">
-          sur 5 · <span class="font-semibold text-chrome-100">{rating.count} avis</span> Google
-        </span>
+        <!-- Rating and open-state sit under the CTA on a hairline, the way a
+             shop window card carries its details under the name. -->
+        <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-rule pt-6" data-reveal>
+          <p class="flex items-center gap-2.5">
+            <Stars value={rating.value} size="size-[1.05rem]" />
+            <span class="font-display text-lg font-bold text-ink">
+              {rating.value.toString().replace('.', ',')}
+            </span>
+            <span class="text-[0.95rem] text-steel">
+              · <span class="font-semibold text-ink-soft">{rating.count} avis</span> Google
+            </span>
+          </p>
+
+          <p
+            class="flex items-center gap-2 text-[0.95rem] font-semibold"
+            data-open-badge
+            data-open={openNow ? 'true' : 'false'}
+          >
+            <span
+              class:list={['size-2 rounded-full', openNow ? 'bg-emerald-600' : 'bg-steel-light']}
+              data-open-dot
+              aria-hidden="true"
+            ></span>
+            <span data-open-text class={openNow ? 'text-emerald-700' : 'text-steel'}>
+              {openNow ? 'Ouvert maintenant' : 'Fermé actuellement'}
+            </span>
+          </p>
+        </div>
       </div>
 
-      <span class="hidden h-5 w-px bg-ink-600 sm:block"></span>
-
-      <p
-        class="inline-flex items-center gap-2 text-sm font-medium"
-        data-open-badge
-        data-open={openNow ? 'true' : 'false'}
-      >
-        <span
-          class:list={[
-            'size-2 rounded-full',
-            openNow ? 'bg-emerald-400' : 'bg-chrome-400',
-          ]}
-          data-open-dot
-          aria-hidden="true"
-        ></span>
-        <span data-open-text class={openNow ? 'text-emerald-300' : 'text-chrome-300'}>
-          {openNow ? 'Ouvert maintenant' : 'Fermé actuellement'}
-        </span>
-      </p>
-    </div>
-
-    <div class="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center" data-reveal>
-      <a
-        href={`tel:${phone.tel}`}
-        data-analytics="call-hero"
-        class="inline-flex items-center justify-center gap-3 rounded-full bg-signal px-8 py-4 font-display text-xl font-semibold tracking-wide text-white transition-colors hover:bg-signal-hover"
-      >
-        <Icon name="phone" class="size-5" />
-        {phone.display}
-      </a>
-      <a
-        href="#services"
-        class="inline-flex items-center justify-center gap-2 rounded-full border border-ink-600 px-8 py-4 font-display text-lg font-medium tracking-wide text-chrome-100 transition-colors hover:border-chrome-400 hover:text-white"
-      >
-        Nos prestations
-        <Icon name="arrow" class="size-4" />
-      </a>
+      <div class="relative" data-reveal>
+        <Image
+          src={devanture}
+          alt={`La devanture de ${business.name}, ${address.street} à ${address.city}`}
+          widths={[640, 1024, 1360]}
+          sizes="(min-width: 1024px) 620px, 100vw"
+          loading="eager"
+          fetchpriority="high"
+          class="aspect-[4/3] w-full object-cover lg:aspect-[5/4]"
+        />
+        <!-- The crimson band off the awning, anchoring the photo to the page. -->
+        <span class="absolute inset-x-0 bottom-0 h-1.5 bg-crimson" aria-hidden="true"></span>
+      </div>
     </div>
   </div>
 </section>

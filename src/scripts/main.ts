@@ -138,9 +138,9 @@ const header = document.querySelector<HTMLElement>('[data-header]');
 
 if (header) {
   const applyHeaderState = (scrolled: boolean) => {
-    header.classList.toggle('bg-ink-950/90', scrolled);
+    header.classList.toggle('bg-surface/95', scrolled);
     header.classList.toggle('backdrop-blur-md', scrolled);
-    header.classList.toggle('border-ink-800', scrolled);
+    header.classList.toggle('border-rule', scrolled);
     header.classList.toggle('border-transparent', !scrolled);
   };
 
@@ -209,12 +209,61 @@ if (badge) {
 
   badge.dataset.open = String(open);
   if (dot) {
-    dot.classList.toggle('bg-emerald-400', open);
-    dot.classList.toggle('bg-chrome-400', !open);
+    dot.classList.toggle('bg-emerald-600', open);
+    dot.classList.toggle('bg-steel-light', !open);
   }
   if (text) {
     text.textContent = open ? 'Ouvert maintenant' : 'Fermé actuellement';
-    text.classList.toggle('text-emerald-300', open);
-    text.classList.toggle('text-chrome-300', !open);
+    text.classList.toggle('text-emerald-700', open);
+    text.classList.toggle('text-steel', !open);
   }
+}
+
+/* ------------------------------------------------------------------ *
+ * Message composer
+ *
+ * There is no server behind this page. The fields are assembled into a
+ * pre-written message and handed to WhatsApp or the visitor's mail app, which
+ * is where the reply will happen anyway. The button is a real link, so with JS
+ * off it still opens the channel — just without the details filled in.
+ * ------------------------------------------------------------------ */
+
+const composeForm = document.querySelector<HTMLFormElement>('[data-compose]');
+
+if (composeForm) {
+  const mode = composeForm.dataset.compose;
+  const target = composeForm.dataset.target;
+  const submit = composeForm.querySelector<HTMLAnchorElement>('[data-compose-submit]');
+
+  const buildMessage = () => {
+    const value = (name: string) =>
+      (composeForm.querySelector<HTMLInputElement>(`[name="${name}"]`)?.value ?? '').trim();
+
+    return [
+      'Bonjour,',
+      value('sujet') && `Demande : ${value('sujet')}`,
+      value('vehicule') && `Véhicule : ${value('vehicule')}`,
+      value('message'),
+      value('nom') && `— ${value('nom')}`,
+    ]
+      .filter(Boolean)
+      .join('\n');
+  };
+
+  const refresh = () => {
+    if (!submit || !target) return;
+    const body = buildMessage();
+    submit.href =
+      mode === 'whatsapp'
+        ? `${target}?text=${encodeURIComponent(body)}`
+        : `mailto:${target}?subject=${encodeURIComponent(
+            'Demande depuis le site'
+          )}&body=${encodeURIComponent(body)}`;
+  };
+
+  composeForm.addEventListener('input', refresh);
+  composeForm.addEventListener('change', refresh);
+  // The form must never submit — there is nothing to submit to.
+  composeForm.addEventListener('submit', (event) => event.preventDefault());
+  refresh();
 }

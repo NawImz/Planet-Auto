@@ -63,6 +63,26 @@ export const business = {
   social: [],
 };
 
+/**
+ * Where the "leave a message" block sends people.
+ *
+ * A static site has no inbox of its own, so the block adapts to whichever
+ * channel the garage actually reads:
+ *
+ *   whatsapp  → opens WhatsApp with the message pre-written. No server, no
+ *               dashboard to check, it lands on the phone they already carry.
+ *   email     → opens the visitor's mail app, pre-filled. Same idea, slower.
+ *   neither   → the block collapses to the phone card alone rather than
+ *               offering a form whose messages nobody would collect.
+ *
+ * `whatsapp` is the country code plus the number, digits only, no + and no
+ * spaces: 06 12 34 56 78 in France becomes '33612345678'.
+ */
+export const contact = {
+  whatsapp: null,
+  email: null,
+};
+
 export const services = [
   {
     slug: 'reparation',
@@ -106,6 +126,25 @@ export const services = [
       'Station de montage sur place : montage, équilibrage, permutation et géométrie. Toutes marques.',
     icon: 'tire',
   },
+];
+
+/**
+ * Equipment brands, read off the awning. Naming them is what tells a
+ * professional buyer the counter stocks the real thing rather than no-names.
+ * To be confirmed with the garage before publishing — a sign can be older than
+ * the current supplier list.
+ */
+export const brands = [
+  'Valeo',
+  'Bosch',
+  'Monroe',
+  'Purflux',
+  'Ferodo',
+  'Brembo',
+  'Bosal',
+  'Moog',
+  'Gabriel',
+  'Delphi',
 ];
 
 /**
@@ -160,24 +199,20 @@ export const benefits = [
     title: "Votre voiture ne dort pas ici",
     description:
       "La plupart des interventions courantes repartent le jour même. On vous annonce un délai réaliste dès l'accueil, pas une estimation optimiste que vous découvrirez fausse trois jours plus tard.",
-    stat: 'Souvent le jour même',
   },
   {
-    title: 'Le devis est le prix',
+    title: 'Le devis annoncé est le prix payé',
     description:
-      "Le montant annoncé avant travaux est celui que vous payez. Si un imprévu apparaît en démontant, on vous appelle avant de toucher à quoi que ce soit.",
-    stat: 'Devis avant travaux',
+      "Si un imprévu apparaît en démontant, on vous appelle avant de toucher à quoi que ce soit. Vous ne découvrez jamais un supplément au moment de régler.",
   },
   {
-    title: 'On vous explique, en français',
+    title: 'On vous explique, sans jargon',
     description:
       "Vous repartez en sachant ce qui a été changé et pourquoi. Et quand une pièce peut encore tenir une saison, on vous le dit au lieu de la remplacer.",
-    stat: 'Conseil sans jargon',
   },
   {
-    title: 'Accessible à tous',
+    title: 'Ouvert à tout le monde',
     description:
-      "Parking et entrée de plain-pied, accessibles aux personnes à mobilité réduite. Paiement par carte et sans contact acceptés.",
-    stat: 'Parking & entrée PMR',
+      "Parking et entrée de plain-pied, accessibles aux personnes à mobilité réduite. Carte bancaire et sans contact acceptés.",
   },
 ];

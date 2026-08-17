@@ -1,0 +1,33 @@
+---
+import LogoMark from './LogoMark.astro';
+
+interface Props {
+  class?: string;
+  markClass?: string;
+  /** `stacked` mirrors the left panel of the awning; `inline` the main sign. */
+  layout?: 'inline' | 'stacked';
+  title?: string;
+}
+
+const {
+  class: className = '',
+  markClass = 'size-9',
+  layout = 'inline',
+  title,
+} = Astro.props;
+---
+
+{/* The sign splits the name across two colours — PLANET in steel, AUTO in
+    crimson. Keeping that split is most of what makes the lockup recognisable. */}
+<span class={`inline-flex items-center gap-2.5 ${className}`}>
+  <LogoMark class={markClass} title={title} />
+  <span
+    class:list={[
+      'font-display font-extrabold uppercase leading-[0.9] tracking-[-0.03em]',
+      layout === 'stacked' ? 'flex flex-col' : 'flex items-baseline gap-1.5',
+    ]}
+  >
+    <span class="text-ink">Planet</span>
+    <span class="text-crimson">Auto</span>
+  </span>
+</span>

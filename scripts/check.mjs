@@ -114,8 +114,58 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PAT
     els.filter((el) => Number(getComputedStyle(el).opacity) < 0.9).length
   );
   check('sans JS : tout le contenu est visible', hidden === 0, `${hidden} masqué(s)`);
-  const formAction = await page.$('form[name="contact"]');
-  check('sans JS : le formulaire est présent', !!formAction);
+  // Whatever channel is configured, the contact block must offer a working way
+  // through with JS off: a composer link, or the phone card as fallback.
+  const reachable = await page.evaluate(() => {
+    const section = document.querySelector('#contact');
+    if (!section) return 'section #contact absente';
+    const composer = section.querySelector('[data-compose-submit]');
+    if (composer) return composer.getAttribute('href')?.startsWith('http') ||
+      composer.getAttribute('href')?.startsWith('mailto:')
+      ? null
+      : 'le lien du composeur ne pointe nulle part sans JS';
+    return section.querySelector('a[href^="tel:"]') ? null : 'aucun canal joignable';
+  });
+  check('sans JS : un canal de contact reste joignable', reachable === null, reachable ?? '');
+  await ctx.close();
+}
+
+/* ---------- typography: no glued words ---------- */
+{
+  // Astro swallows the newline before an interpolation, which silently welds
+  // the last word to the next one ("détachées àÉpinay"). Cheap to miss by eye,
+  // so it is asserted.
+  const ctx = await browser.newContext();
+  const page = await ctx.newPage();
+  await page.goto(BASE, { waitUntil: 'domcontentloaded' });
+  const glued = await page.evaluate(() => {
+    // Scoped to prose containers, one at a time. The defect welds two adjacent
+    // text nodes inside a single paragraph, so that is the unit to inspect —
+    // concatenating the whole page instead would flag every legitimate
+    // boundary between block elements, and a lockup like PLANET|AUTO too.
+    const legit = /OpenStreetMap|WhatsApp|YouTube|iPhone|McDonald/;
+    const found = [];
+    for (const el of document.querySelectorAll('p, dd, address, h1, h2, h3, h4')) {
+      if (el.closest('code')) continue;
+      // Any depth, not just direct children: the identifiers in the review
+      // warning sit in a <code> nested inside a <span> inside the <p>.
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
+        acceptNode: (node) =>
+          node.parentElement?.closest('code') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT,
+      });
+      let text = '';
+      let node;
+      while ((node = walker.nextNode())) text += node.textContent;
+      // One lowercase letter is enough before the capital: the welded pair is
+      // often "à" + a place name. French words do not otherwise run a
+      // lowercase straight into a capital, so the whitelist covers the rest.
+      for (const m of text.matchAll(/[\wà-ÿ]*[a-zà-ÿ][A-ZÀ-Þ][a-zà-ÿ][\wà-ÿ]*/g)) {
+        if (!legit.test(m[0])) found.push(m[0]);
+      }
+    }
+    return found;
+  });
+  check('aucun mot collé à une expression', glued.length === 0, glued.slice(0, 5).join(', '));
   await ctx.close();
 }
 

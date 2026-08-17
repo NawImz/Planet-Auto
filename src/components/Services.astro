@@ -1,40 +1,81 @@
 ---
-import { services, business } from '../config/business.js';
+import { services, business, brands } from '../config/business.js';
 import Icon from './Icon.astro';
-import SectionHeading from './SectionHeading.astro';
+
+// The shop is two businesses under one roof, and that split is the actual
+// story — more useful to a visitor than six interchangeable cards.
+const atelier = services.filter((s) => ['reparation', 'entretien', 'diagnostic', 'freinage', 'pneus'].includes(s.slug));
+const magasin = services.filter((s) => s.slug === 'pieces');
 ---
 
-<section id="services" class="scroll-mt-20 border-t border-ink-800 py-section">
+<section id="services" class="scroll-mt-20 border-t border-rule bg-surface py-section">
   <div class="mx-auto max-w-6xl px-5 lg:px-8">
-    <SectionHeading
-      eyebrow="Prestations"
-      title="Atelier et magasin, au même endroit"
-      lead="On répare, et on a la pièce en rayon. C'est ce qui évite l'aller-retour entre le garage qui diagnostique et le fournisseur qui commande."
-    />
+    <div class="max-w-2xl">
+      <span class="band" data-reveal></span>
+      <h2 class="mt-5 font-display text-[clamp(1.9rem,4.5vw,2.9rem)] font-extrabold" data-reveal>
+        Deux métiers, un seul comptoir
+      </h2>
+      <p class="mt-4 text-lg text-steel" data-reveal>
+        C'est ce qui évite l'aller-retour entre le garage qui diagnostique et le
+        fournisseur qui commande.
+      </p>
+    </div>
 
-    <ul class="mt-14 grid gap-px overflow-hidden rounded-2xl border border-ink-700 bg-ink-700 sm:grid-cols-2 lg:grid-cols-3">
-      {services.map((service) => (
-        <li class="group relative bg-ink-950 p-7 transition-colors hover:bg-ink-900 lg:p-8" data-reveal>
-          <span class="inline-flex size-12 items-center justify-center rounded-xl bg-ink-850 text-signal-bright ring-1 ring-ink-700 transition-colors group-hover:bg-signal group-hover:text-white group-hover:ring-signal">
-            <Icon name={service.icon} class="size-6" />
-          </span>
-          <h3 class="mt-5 font-display text-2xl font-semibold uppercase tracking-tight text-white">
-            {service.title}
-          </h3>
-          <p class="mt-3 text-[0.95rem] leading-relaxed text-chrome-300">{service.description}</p>
-        </li>
-      ))}
-    </ul>
+    <div class="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-16">
+      <div>
+        <h3 class="label pb-4 text-ink" data-reveal>À l'atelier</h3>
+        <ul class="border-t border-rule">
+          {atelier.map((service) => (
+            <li class="flex gap-5 border-b border-rule py-6" data-reveal>
+              <span class="mt-0.5 shrink-0 text-crimson">
+                <Icon name={service.icon} class="size-6" />
+              </span>
+              <div>
+                <h4 class="font-display text-xl font-bold">{service.title}</h4>
+                <p class="mt-1.5 text-steel">{service.description}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
 
-    <p class="mt-8 text-chrome-300" data-reveal>
-      Une pièce précise à trouver ou un doute sur une panne ?
-      <a
-        href={`tel:${business.phone.tel}`}
-        data-analytics="call-services"
-        class="font-semibold text-signal-bright underline decoration-signal/50 underline-offset-4 transition-colors hover:decoration-signal-bright"
-      >
-        Appelez-nous au {business.phone.display}
-      </a>, on vous répond directement.
-    </p>
+      <div>
+        <h3 class="label pb-4 text-ink" data-reveal>Au magasin</h3>
+        {magasin.map((service) => (
+          <div class="border-t border-rule pt-6" data-reveal>
+            <span class="text-crimson"><Icon name={service.icon} class="size-6" /></span>
+            <h4 class="mt-3 font-display text-xl font-bold">{service.title}</h4>
+            <p class="mt-1.5 text-steel">{service.description}</p>
+          </div>
+        ))}
+
+        <div class="mt-8 border-t border-rule pt-6" data-reveal>
+          <h4 class="label text-ink">Marques distribuées</h4>
+          <ul class="mt-3 flex flex-wrap gap-x-2 gap-y-2">
+            {brands.map((brand) => (
+              <li class="border border-rule px-2.5 py-1 font-display text-[0.82rem] font-semibold tracking-tight text-steel">
+                {brand}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="mt-8 bg-paper p-6" data-reveal>
+          <p class="text-[0.95rem] leading-relaxed text-ink-soft">
+            Une référence précise à trouver, ou un doute sur une panne&nbsp;?
+            Le plus rapide reste de nous appeler&nbsp;: on vérifie le stock
+            pendant que vous êtes en ligne.
+          </p>
+          <a
+            href={`tel:${business.phone.tel}`}
+            data-analytics="call-services"
+            class="mt-3 inline-flex min-h-11 items-center gap-2 font-display text-lg font-bold text-crimson transition-colors hover:text-crimson-deep"
+          >
+            <Icon name="phone" class="size-4" />
+            {business.phone.display}
+          </a>
+        </div>
+      </div>
+    </div>
   </div>
 </section>

@@ -1,60 +1,64 @@
 ---
 import { business } from '../config/business.js';
 import Icon from './Icon.astro';
+import LogoMark from './LogoMark.astro';
 
 const { phone, address, social } = business;
 const year = new Date().getFullYear();
+
+const links = [
+  { href: '#services', label: 'Prestations' },
+  { href: '#atouts', label: 'La maison' },
+  { href: '#avis', label: 'Avis clients' },
+  { href: '#acces', label: 'Accès et horaires' },
+  { href: '/mentions-legales', label: 'Mentions légales' },
+];
 ---
 
-<footer class="border-t border-ink-800 bg-ink-900">
+{/* The one dark surface on the page — the ink from the mark, so the footer
+    closes the page without introducing a colour the sign does not have. */}
+<footer class="bg-ink text-white/70" style="--logo-ring: #ffffff">
   <div class="mx-auto max-w-6xl px-5 py-16 lg:px-8">
     <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
       <div class="lg:col-span-2">
-        <p class="font-display text-2xl font-bold tracking-tight text-white">
-          PLANET<span class="text-signal-bright">AUTO</span>
-        </p>
-        <p class="mt-3 max-w-sm text-sm leading-relaxed text-chrome-300">
-          Atelier de réparation automobile et distributeur de pièces détachées à
+        <span class="inline-flex items-center gap-2.5">
+          <LogoMark class="size-10" />
+          <span class="font-display text-2xl font-extrabold uppercase leading-none tracking-[-0.03em]">
+            <span class="text-white">Planet</span>&nbsp;<span class="text-white/55">Auto</span>
+          </span>
+        </span>
+        <p class="mt-4 max-w-sm leading-relaxed">
+          Atelier de réparation et distributeur de pièces détachées à{' '}
           {address.city}, pour les particuliers et les professionnels.
         </p>
       </div>
 
       <div>
-        <h2 class="font-display text-sm font-semibold uppercase tracking-[0.16em] text-white">Contact</h2>
-        <ul class="mt-4 space-y-3 text-sm text-chrome-300">
+        <h2 class="label text-white">Contact</h2>
+        <ul class="mt-3">
           <li>
             <a
               href={`tel:${phone.tel}`}
               data-analytics="call-footer"
-              class="inline-flex min-h-11 items-center gap-2.5 font-semibold text-chrome-100 transition-colors hover:text-signal-bright"
+              class="inline-flex min-h-11 items-center gap-2.5 font-display text-lg font-bold text-white transition-colors hover:text-crimson"
             >
               <Icon name="phone" class="size-4" />
               {phone.display}
             </a>
           </li>
-          <li class="flex items-start gap-2.5">
-            <Icon name="pin" class="mt-0.5 size-4 shrink-0" />
+          <li class="flex items-start gap-2.5 pt-1">
+            <Icon name="pin" class="mt-1 size-4 shrink-0" />
             <span>{address.street}<br />{address.postalCode} {address.city}</span>
           </li>
         </ul>
       </div>
 
       <div>
-        <h2 class="font-display text-sm font-semibold uppercase tracking-[0.16em] text-white">Le site</h2>
-        {/* min-h-11 (44px) rather than tight leading: these are standalone nav
-            targets, not inline links, so WCAG 2.5.5 applies to them. */}
-        <ul class="mt-2 text-sm">
-          {[
-            { href: '#services', label: 'Prestations' },
-            { href: '#avis', label: 'Avis clients' },
-            { href: '#acces', label: 'Accès et horaires' },
-            { href: '/mentions-legales', label: 'Mentions légales' },
-          ].map((item) => (
+        <h2 class="label text-white">Le site</h2>
+        <ul class="mt-1">
+          {links.map((item) => (
             <li>
-              <a
-                href={item.href}
-                class="flex min-h-11 items-center text-chrome-300 transition-colors hover:text-white"
-              >
+              <a href={item.href} class="flex min-h-11 items-center transition-colors hover:text-white">
                 {item.label}
               </a>
             </li>
@@ -62,14 +66,14 @@ const year = new Date().getFullYear();
         </ul>
 
         {social.length > 0 && (
-          <ul class="mt-6 flex gap-3">
+          <ul class="mt-4 flex gap-3">
             {social.map((item: { href: string; label: string }) => (
               <li>
                 <a
                   href={item.href}
                   target="_blank"
                   rel="noopener"
-                  class="inline-flex size-10 items-center justify-center rounded-full border border-ink-600 text-chrome-300 transition-colors hover:border-chrome-400 hover:text-white"
+                  class="inline-flex size-11 items-center justify-center border border-white/20 transition-colors hover:border-white/60 hover:text-white"
                 >
                   <span class="sr-only">{item.label}</span>
                 </a>
@@ -80,7 +84,7 @@ const year = new Date().getFullYear();
       </div>
     </div>
 
-    <div class="hairline mt-12 flex flex-col gap-2 pt-7 text-xs text-chrome-400 sm:flex-row sm:items-center sm:justify-between">
+    <div class="mt-12 flex flex-col gap-2 border-t border-white/15 pt-7 text-sm sm:flex-row sm:items-center sm:justify-between">
       <p>© {year} {business.legalName}. Tous droits réservés.</p>
       <p>{address.street} · {address.postalCode} {address.city}</p>
     </div>

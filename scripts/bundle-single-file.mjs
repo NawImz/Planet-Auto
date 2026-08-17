@@ -102,9 +102,30 @@ if (icoRef) {
 
 /* ---------- map ---------- */
 
-// Nothing to strip: the map is click-to-load, so no iframe exists in the built
-// HTML. Inside a sandboxed preview the button cannot reach Google, but the
-// panel's "open in Google Maps" link works from anywhere.
+/*
+  Strip the map embed out of the preview.
+
+  A sandboxed host refuses it and paints its own opaque "content blocked"
+  notice inside the frame — which covers the address sitting behind it and
+  reads as a broken site. Nothing in the page can prevent that: the refusal
+  happens inside the frame, where the parent document has no reach.
+
+  So the preview simply does not carry the iframe. The deployed site keeps it;
+  here the frame is left showing the address that was already behind it, plus a
+  line saying why the map is absent.
+*/
+const mapFrame = html.match(/<iframe[^>]*openstreetmap[^>]*>\s*<\/iframe>/);
+if (mapFrame) {
+  html = html.replace(
+    mapFrame[0],
+    `<p class="absolute inset-x-0 bottom-0 px-6 pb-5 text-center text-sm leading-relaxed text-steel-light">
+      Aperçu&nbsp;: la carte n'est pas chargée ici, cette page ne peut appeler
+      aucun service externe. Elle s'affiche sur le site en ligne — le lien
+      ci-dessous ouvre le plan dès maintenant.
+    </p>`
+  );
+  report.push(['carte remplacée par une note (aperçu isolé)', 0]);
+}
 
 /* ---------- gallery identity ---------- */
 

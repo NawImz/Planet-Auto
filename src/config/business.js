@@ -37,8 +37,11 @@ export const business = {
   },
 
   /**
-   * `opens`/`closes` use 24h HH:MM. A day with two ranges (lunch break) lists
-   * two entries. An empty array means closed.
+   * Confirmed by the garage. `opens`/`closes` use 24h HH:MM; a day with a
+   * lunch break lists two ranges, and an empty array means closed.
+   *
+   * These feed the printed table, the live open/closed badge and the
+   * openingHoursSpecification Google reads — one edit here moves all three.
    */
   hours: [
     { day: 'Lundi', dayCode: 'Mo', ranges: [['09:00', '12:30'], ['14:00', '19:00']] },
@@ -61,28 +64,6 @@ export const business = {
 
   /** Left empty until the client confirms they have accounts. */
   social: [],
-};
-
-/**
- * Where the "leave a message" block sends people.
- *
- * A static site has no inbox of its own, so the block adapts to whichever
- * channel the garage actually reads:
- *
- *   whatsapp  → opens WhatsApp with the message pre-written. No server, no
- *               dashboard to check, it lands on the phone they already carry.
- *   email     → opens the visitor's mail app, pre-filled. Same idea, slower.
- *   neither   → the block collapses to the phone card alone rather than
- *               offering a form whose messages nobody would collect.
- *
- * `whatsapp` is the country code plus the number, digits only, no + and no
- * spaces: 06 12 34 56 78 in France becomes '33612345678'.
- */
-export const contact = {
-  // Numéro de test fourni par le client — à remplacer par la ligne WhatsApp
-  // réelle du garage avant mise en ligne.
-  whatsapp: '33767898694',
-  email: null,
 };
 
 export const services = [

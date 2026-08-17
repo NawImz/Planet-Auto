@@ -88,41 +88,6 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PAT
   await ctx.close();
 }
 
-/* ---------- message composer ---------- */
-{
-  const ctx = await browser.newContext({ viewport: { width: 900, height: 1000}, locale: 'fr-FR' });
-  const page = await ctx.newPage();
-  await page.goto(BASE, { waitUntil: 'networkidle' });
-
-  const submit = await page.$('[data-compose-submit]');
-  if (!submit) {
-    check('composeur : aucun canal configuré, rien à tester', true, 'ignoré');
-  } else {
-    const empty = await submit.getAttribute('href');
-    check(
-      'composeur : lien valide avant toute saisie',
-      /^(https:\/\/wa\.me\/\d+|mailto:)/.test(empty) && decodeURIComponent(empty).length > 30,
-      empty?.slice(0, 45)
-    );
-
-    await page.fill('#nom', 'Jean Dupont');
-    await page.fill('#vehicule', 'Clio 4 de 2015');
-    await page.selectOption('#sujet', 'Freinage');
-    await page.fill('#message', 'Bruit au freinage');
-    await page.waitForTimeout(250);
-
-    const filled = decodeURIComponent((await submit.getAttribute('href')) ?? '');
-    check(
-      'composeur : les champs saisis arrivent dans le message',
-      ['Jean Dupont', 'Clio 4 de 2015', 'Freinage', 'Bruit au freinage'].every((v) =>
-        filled.includes(v)
-      ),
-      filled.replace(/\n/g, ' | ').slice(0, 70)
-    );
-  }
-  await ctx.close();
-}
-
 /* ---------- reduced motion ---------- */
 {
   const ctx = await browser.newContext({
@@ -149,19 +114,16 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PAT
     els.filter((el) => Number(getComputedStyle(el).opacity) < 0.9).length
   );
   check('sans JS : tout le contenu est visible', hidden === 0, `${hidden} masqué(s)`);
-  // Whatever channel is configured, the contact block must offer a working way
-  // through with JS off: a composer link, or the phone card as fallback.
+  // The phone number is the only conversion path, so it has to survive with JS
+  // off — in the contact block and in the fixed mobile bar alike.
   const reachable = await page.evaluate(() => {
-    const section = document.querySelector('#contact');
-    if (!section) return 'section #contact absente';
-    const composer = section.querySelector('[data-compose-submit]');
-    if (composer) return composer.getAttribute('href')?.startsWith('http') ||
-      composer.getAttribute('href')?.startsWith('mailto:')
-      ? null
-      : 'le lien du composeur ne pointe nulle part sans JS';
-    return section.querySelector('a[href^="tel:"]') ? null : 'aucun canal joignable';
+    const inContact = document.querySelector('#contact a[href^="tel:"]');
+    const inBar = document.querySelector('[data-call-bar] a[href^="tel:"]');
+    if (!inContact) return 'aucun numéro dans la section contact';
+    if (!inBar) return 'aucun numéro dans la barre fixe';
+    return null;
   });
-  check('sans JS : un canal de contact reste joignable', reachable === null, reachable ?? '');
+  check('sans JS : le téléphone reste joignable', reachable === null, reachable ?? '');
   await ctx.close();
 }
 

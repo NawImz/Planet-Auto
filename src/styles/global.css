@@ -2,6 +2,7 @@
 
 @import '@fontsource-variable/archivo';
 @import '@fontsource-variable/source-sans-3';
+@import '@fontsource-variable/oxanium';
 
 /*
   Design tokens, taken from the shopfront rather than invented.
@@ -33,6 +34,15 @@
 
   --font-display: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
   --font-sans: 'Source Sans 3 Variable', ui-sans-serif, system-ui, sans-serif;
+
+  /*
+    The wordmark only. The painted sign uses a squared geometric face —
+    pointed A, squared E, U and O — set as a large initial capital followed by
+    smaller capitals. Oxanium is the closest free match; the exact face on the
+    sign could not be identified from a photograph, and the shop has no vector
+    file carrying the lettering.
+  */
+  --font-wordmark: 'Oxanium Variable', ui-sans-serif, system-ui, sans-serif;
 
   --spacing-section: 6.5rem;
 }

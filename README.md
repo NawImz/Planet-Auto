@@ -8,7 +8,7 @@ données et sans serveur.
 npm install
 npm run dev             # http://localhost:4321
 npm run build           # -> dist/
-npm run qa              # build + typecheck + 26 tests fonctionnels
+npm run qa              # build + typecheck + 24 tests fonctionnels
 npm run preview:single  # aperçu en un seul fichier HTML
 ```
 
@@ -26,18 +26,13 @@ de la publication, et les coordonnées de l'hébergeur.
 
 L'ancienne page est récupérable dans l'historique git.
 
-### 2. Remplacer le numéro WhatsApp de test
-
-`contact.whatsapp` contient `33767898694`, un numéro fourni pour tester. À
-remplacer par la ligne réellement consultée par le garage.
-
-### 3. Confirmer les notes en étoiles des avis
+### 2. Confirmer les notes en étoiles des avis
 
 Les quatre avis sont le libellé exact transmis par le client, mais les notes
 n'accompagnaient pas les textes : elles sont déduites du contenu (les quatre
 disent explicitement recommander) et valent 5. À vérifier sur la fiche Google.
 
-### 4. Vérifier les coordonnées GPS
+### 3. Vérifier les coordonnées GPS
 
 `business.address.lat` / `.lng` sont **approximatives** — elles n'ont pas pu
 être géocodées. Elles ne servent qu'à cadrer la carte et le champ `geo` du
@@ -47,11 +42,7 @@ utilisent une requête textuelle qui résout correctement quoi qu'il arrive.
 Pour les corriger : fiche Google Maps → clic droit sur le marqueur → copier les
 coordonnées.
 
-### 5. Confirmer les horaires et les marques
-
-Les horaires viennent du brief avec la mention « à confirmer ». Ils alimentent
-le tableau affiché, le badge « Ouvert / Fermé » **et** le JSON-LD — une erreur
-se propage partout, dont dans la fiche Google.
+### 4. Valider les marques
 
 La liste `brands` a été relevée sur l'auvent. Une enseigne peut être plus
 ancienne que la liste réelle des fournisseurs : à valider.
@@ -97,30 +88,32 @@ chaud (l'immeuble est en brique et pierre crème), ce qui évite le gris d'écra
 bandeau de l'auvent. C'est le seul ornement emprunté, utilisé à la place d'un
 sur-titre coloré répété à chaque section.
 
-**Les typographies** sont Archivo (titres, signalétique) et Source Sans 3
-(texte courant), auto-hébergées via npm — aucun appel à un CDN de polices.
+**Les typographies** sont Archivo (titres), Source Sans 3 (texte courant) et
+Oxanium pour le seul wordmark, auto-hébergées via npm — aucun appel à un CDN.
+
+**Le wordmark** reprend la manière dont l'enseigne est peinte : une capitale
+initiale agrandie suivie de capitales plus petites, dans une graisse
+géométrique carrée, les deux mots dans le même rouge. La police exacte de
+l'enseigne n'a pas pu être identifiée depuis une photo et le garage n'a pas de
+fichier vectoriel portant le lettrage : Oxanium en est l'approximation libre la
+plus proche. Sa couleur passe par `--wordmark`, relevée sur le footer où le
+cramoisi de marque ne tient que 2,7:1.
 
 **Pas de numérotation 01/02/03** dans « Ce qui revient dans les avis » : ces
 quatre points ne sont pas une séquence, les numéroter habillerait le contenu
 au lieu de le décrire.
 
-## Le bloc message
+## Pas de formulaire, par choix
 
-Il n'y a **pas de serveur** derrière ce site, donc pas de formulaire classique.
-Le comportement dépend de `contact` dans `business.js` :
+Un bloc « écrire un message » a été construit puis retiré. Un site statique n'a
+pas de boîte de réception&nbsp;: il devait donc passer la main à WhatsApp ou à
+l'application mail du visiteur, et cette indirection n'apportait rien qu'un
+garage ait besoin. L'appel est la conversion, et le numéro n'est jamais à plus
+d'un pouce — en-tête sur desktop, barre fixe sur mobile.
 
-| Configuration | Ce que voit le visiteur |
-|---|---|
-| `whatsapp: '336…'` *(état actuel)* | Un formulaire qui **compose un message WhatsApp** et l'ouvre sur le téléphone du garage. |
-| `email: '…@…'` | Le même formulaire, qui ouvre l'application mail du visiteur, pré-remplie. |
-| les deux à `null` | Pas de formulaire : un encart qui renvoie au téléphone et au comptoir. |
-
-Le numéro WhatsApp s'écrit indicatif + numéro, chiffres uniquement, sans `+` ni
-espaces : `06 12 34 56 78` devient `33612345678`.
-
-Rien n'est stocké sur le site : le message part depuis l'application du
-visiteur. C'est ce qui permet de se passer de serveur, de RGPD lourd et de
-tableau de bord que personne n'ouvre.
+La colonne de droite de la section contact porte à la place une liste de ce
+qu'il faut avoir sous la main avant d'appeler, ce qui raccourcit l'échange des
+deux côtés.
 
 ## Structure
 
@@ -130,7 +123,7 @@ src/
   lib/hours.js         ← formatage horaires + openingHoursSpecification
   layouts/Layout.astro ← <head>, SEO, JSON-LD LocalBusiness
   components/          ← Hero, Services, WhyUs, Reviews, Location, Contact…
-  scripts/main.ts      ← GSAP, Lenis, menu, badge ouvert/fermé, composeur
+  scripts/main.ts      ← GSAP, Lenis, menu, badge ouvert/fermé
   styles/global.css    ← tokens de design
 brand/
   logo-source.png      ← artwork d'origine, source de la vectorisation
@@ -158,7 +151,7 @@ désactive Lenis et toutes les animations.
 ## Dupliquer pour un autre garage
 
 1. `src/config/business.js` — nom, téléphone, adresse, horaires, note, services,
-   avis, marques, canal de contact. Aucun composant ne contient de donnée client
+   avis, marques. Aucun composant ne contient de donnée client
    en dur.
 2. `src/assets/` — remplacer les quatre photos (mêmes noms de fichiers).
 3. `src/styles/global.css` — le bloc `@theme`. **Revérifier les contrastes** si
@@ -171,7 +164,7 @@ Puis `SITE_URL` en haut de `business.js`, et les mentions légales.
 ## QA
 
 ```bash
-npm run qa                                         # typecheck + 26 tests
+npm run qa                                         # typecheck + 24 tests
 npm run preview                                    # dans un terminal
 npm run qa:shots -- http://localhost:4321 shots    # captures + audit
 ```

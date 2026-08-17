@@ -26,9 +26,9 @@ export const business = {
     postalCode: '93800',
     city: 'Épinay-sur-Seine',
     country: 'FR',
-    /** Approximate — see README, to be replaced with the exact Places value. */
-    lat: 48.9536,
-    lng: 2.3175,
+    /** Relevées sur la fiche Google du garage. Le marqueur de la carte en dépend. */
+    lat: 48.950628,
+    lng: 2.3255382,
   },
 
   rating: {

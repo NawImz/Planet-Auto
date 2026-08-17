@@ -13,22 +13,23 @@ const fullAddress = `${address.street}, ${address.postalCode} ${address.city}`;
   OpenStreetMap, shown straight away.
 
   It carries no advertising cookie, so it can load with the page without
-  obliging a consent banner — which a Google embed would. The cost is that its
-  embed only accepts a bounding box, so the pin is only as accurate as
-  address.lat/lng.
+  obliging a consent banner — which a Google embed would. Its embed only
+  accepts a bounding box, so the pin is worth exactly what address.lat/lng are
+  worth; those now come off the shop's own Google listing.
 
-  The route buttons stay on a text query rather than those coordinates: a
-  name-and-address search resolves the real listing in whichever map app the
-  visitor opens, so directions are exact even while the pin is approximate.
+  The route buttons still go through a name-and-address search rather than
+  those coordinates: it resolves the real listing in whichever map app the
+  visitor opens, which is a better handover than a bare point.
 */
 const query = encodeURIComponent(`${business.name}, ${fullAddress}`);
 const googleMaps = `https://www.google.com/maps/search/?api=1&query=${query}`;
 const waze = `https://waze.com/ul?q=${query}`;
 
-// Roughly 600 m across, so the street stays identifiable. Latitude spans less
-// than longitude to match the frame, which is wider than it is tall.
-const dLon = 0.0045;
-const dLat = 0.0022;
+// About 410 m by 290 m — street level, close enough to pick out the building.
+// This tight a frame is only defensible now the coordinates are the real ones;
+// while they were estimated it had to stay wide enough to absorb the error.
+const dLon = 0.0028;
+const dLat = 0.0013;
 const bbox = [
   address.lng - dLon,
   address.lat - dLat,

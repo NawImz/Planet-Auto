@@ -32,19 +32,6 @@ Les quatre avis sont le libellé exact transmis par le client, mais les notes
 n'accompagnaient pas les textes : elles sont déduites du contenu (les quatre
 disent explicitement recommander) et valent 5. À vérifier sur la fiche Google.
 
-### 3. Renseigner les coordonnées GPS
-
-`business.address.lat` / `.lng` sont **approximatives** — elles n'ont pas pu
-être géocodées, aucun service de géocodage n'étant joignable depuis
-l'environnement de développement.
-
-**Le marqueur de la carte en dépend directement** : tant qu'elles ne sont pas
-corrigées, le point peut être décalé de quelques centaines de mètres. Les
-boutons d'itinéraire, eux, restent exacts (recherche par nom et adresse).
-
-Pour les corriger : fiche Google Maps → clic droit sur le marqueur → copier les
-coordonnées.
-
 ---
 
 ## Identité visuelle
@@ -142,12 +129,14 @@ publicitaire, donc elle peut se charger avec la page sans imposer de bandeau de
 consentement — ce qu'un embed Google exigerait. Un test vérifie à chaque
 passage qu'aucun embed publicitaire ne se glisse en remplacement.
 
-Son inconvénient : l'embed OSM ne prend qu'une boîte englobante, donc **le
-marqueur ne vaut que ce que valent `address.lat`/`lng`**, aujourd'hui
-approximatives. Les boutons « Itinéraire » et « Waze » ne s'appuient pas
-dessus : ils passent par une recherche nom + adresse, qui résout la vraie fiche
-dans l'application du visiteur. Les indications routières sont donc exactes
-même pendant que le point est approché.
+L'embed OSM ne prend qu'une boîte englobante, donc le marqueur ne vaut que ce
+que valent `address.lat`/`lng` — relevées sur la fiche Google du garage. Le
+cadrage est serré (≈ 410 × 290 m) parce qu'elles sont exactes ; il devait
+rester large tant qu'elles étaient estimées.
+
+Les boutons « Itinéraire » et « Waze » ne s'appuient pas dessus : ils passent
+par une recherche nom + adresse, qui résout la vraie fiche dans l'application
+du visiteur — meilleure passation qu'un point brut.
 
 L'adresse est écrite **derrière** le cadre de la carte : un hôte qui refuse
 l'iframe laisse alors les coordonnées du garage à l'écran plutôt qu'un carré
@@ -156,8 +145,11 @@ chargée sont indiscernables depuis le script (même événement `load`, même
 `contentDocument` à `null`), l'isolation cross-origin existant précisément
 pour ça.
 
-**Aucun appel réseau externe au chargement.** Polices auto-hébergées, images converties en
-WebP au build. ~350 à 480 kB transférés selon la largeur, JS compris.
+**Un seul appel réseau externe : la carte.** Polices auto-hébergées, images
+converties en WebP au build, aucune balise de mesure d'audience ni de
+publicité. Les tuiles OpenStreetMap sont la seule ressource tierce chargée, et
+elles ne portent pas de traceur. ~350 à 480 kB transférés selon la largeur,
+JS compris.
 
 **Le site fonctionne sans JavaScript.** Les éléments animés au scroll sont
 visibles par défaut ; GSAP ne fait que les révéler. `prefers-reduced-motion`

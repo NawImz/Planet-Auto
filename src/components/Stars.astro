@@ -1,0 +1,33 @@
+---
+interface Props {
+  /** 0–5, fractional allowed. */
+  value: number;
+  class?: string;
+  size?: string;
+}
+
+const { value, class: className = '', size = 'size-4' } = Astro.props;
+const pct = Math.max(0, Math.min(100, (value / 5) * 100));
+const star =
+  'M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.45L12 17.45 6.2 20.5l1.1-6.45-4.7-4.6 6.5-.95L12 2.6Z';
+---
+
+{/* Single row drawn twice: grey underneath, gold clipped to `pct` on top. */}
+<span class={`inline-flex items-center ${className}`} role="img" aria-label={`${value} sur 5`}>
+  <span class="relative inline-block">
+    <span class="flex gap-0.5 text-ink-600" aria-hidden="true">
+      {[0, 1, 2, 3, 4].map(() => (
+        <svg class={size} viewBox="0 0 24 24" fill="currentColor"><path d={star} /></svg>
+      ))}
+    </span>
+    <span
+      class="absolute inset-0 flex gap-0.5 overflow-hidden text-[#F5B301]"
+      style={`width:${pct}%`}
+      aria-hidden="true"
+    >
+      {[0, 1, 2, 3, 4].map(() => (
+        <svg class={`${size} shrink-0`} viewBox="0 0 24 24" fill="currentColor"><path d={star} /></svg>
+      ))}
+    </span>
+  </span>
+</span>

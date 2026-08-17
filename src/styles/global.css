@@ -1,0 +1,164 @@
+@import 'tailwindcss';
+
+@import '@fontsource-variable/roboto-condensed';
+@import '@fontsource-variable/inter';
+
+/*
+  Design tokens.
+
+  Two reds, not one. No single red clears WCAG AA both as a button background
+  under white text and as accent text on the near-black page. `signal` is the
+  fill (white on it = 5.00:1), `signal-bright` is the ink (on --color-ink-950 =
+  5.55:1). Same hue family, so it reads as a single accent.
+*/
+@theme {
+  --color-ink-950: #0a0b0d;
+  --color-ink-900: #111318;
+  --color-ink-850: #15181e;
+  --color-ink-800: #1a1d23;
+  --color-ink-700: #262a31;
+  --color-ink-600: #363b44;
+
+  --color-chrome-100: #e8eaed;
+  --color-chrome-300: #9ba3ae;
+  --color-chrome-400: #7c848f;
+
+  --color-signal: #d91f35;
+  --color-signal-hover: #c8102e;
+  --color-signal-bright: #ff3b30;
+
+  --font-display: 'Roboto Condensed Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --spacing-section: 7rem;
+}
+
+@layer base {
+  :root {
+    /*
+      Height of the fixed mobile call bar. Anything that would otherwise sit
+      underneath it adds this to its bottom padding. Zero from `lg` up, where
+      the bar is not rendered — so one variable keeps the bar, the flow spacer
+      and the hero padding from drifting apart.
+
+      This literal is a deliberately generous floor for the no-JS case: the bar
+      is content-sized, so its real height moves with font metrics. main.ts
+      measures the rendered bar and overwrites this with the exact value.
+    */
+    --call-bar-h: calc(5.5rem + env(safe-area-inset-bottom));
+  }
+
+  @media (min-width: 64rem) {
+    :root {
+      --call-bar-h: 0px;
+    }
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Lenis drives scrolling; disable native smooth when it is active. */
+    -webkit-text-size-adjust: 100%;
+  }
+
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  body {
+    background-color: var(--color-ink-950);
+    color: var(--color-chrome-100);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-signal-bright);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Skip link, visible only on keyboard focus. */
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+  }
+  .skip-link:focus {
+    left: 1rem;
+    top: 1rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--color-signal);
+    color: #fff;
+    font-weight: 600;
+  }
+}
+
+@layer components {
+  /*
+    Scroll-reveal contract: elements marked [data-reveal] start hidden and are
+    animated in by GSAP. If JS never runs, the `no-js` fallback below keeps them
+    visible — the site must not be blank without JS.
+  */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    will-change: opacity, transform;
+  }
+
+  html.no-js [data-reveal],
+  html.reveal-disabled [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+
+  .eyebrow {
+    font-family: var(--font-display);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-signal-bright);
+  }
+
+  .hairline {
+    border-top: 1px solid var(--color-ink-700);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

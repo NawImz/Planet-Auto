@@ -1,0 +1,156 @@
+---
+import { business, services } from '../config/business.js';
+import Icon from './Icon.astro';
+
+const { phone, address } = business;
+---
+
+<section id="contact" class="scroll-mt-20 border-t border-ink-800 py-section">
+  <div class="mx-auto max-w-6xl px-5 lg:px-8">
+    <div class="grid gap-14 lg:grid-cols-2 lg:gap-20">
+      <div>
+        <p class="eyebrow" data-reveal>Contact</p>
+        <h2
+          class="mt-4 font-display text-[clamp(2rem,5.5vw,3.5rem)] font-bold uppercase leading-[1.02] tracking-[-0.015em] text-white"
+          data-reveal
+        >
+          Le plus simple,<br />c'est d'appeler
+        </h2>
+        <p class="mt-5 text-lg leading-relaxed text-chrome-300" data-reveal>
+          Un diagnostic au téléphone prend deux minutes, et vous saurez tout de
+          suite si la pièce est en stock et quand on peut vous prendre.
+        </p>
+
+        <a
+          href={`tel:${phone.tel}`}
+          data-analytics="call-contact"
+          class="mt-8 flex items-center gap-5 rounded-2xl border border-ink-700 bg-ink-900 p-6 transition-colors hover:border-signal hover:bg-ink-850"
+          data-reveal
+        >
+          <span class="inline-flex size-14 shrink-0 items-center justify-center rounded-xl bg-signal text-white">
+            <Icon name="phone" class="size-7" />
+          </span>
+          <span class="min-w-0">
+            <span class="block font-display text-xs font-semibold uppercase tracking-[0.16em] text-chrome-400">
+              Appeler le garage
+            </span>
+            <span class="mt-1 block font-display text-[clamp(1.6rem,4.5vw,2.25rem)] font-bold leading-none tracking-tight text-white">
+              {phone.display}
+            </span>
+          </span>
+        </a>
+
+        <div class="mt-8 hairline space-y-4 pt-8 text-chrome-300" data-reveal>
+          <p class="flex items-start gap-3">
+            <Icon name="pin" class="mt-0.5 size-5 shrink-0 text-signal-bright" />
+            <span>{address.street}, {address.postalCode} {address.city}</span>
+          </p>
+          <p class="flex items-start gap-3">
+            <Icon name="clock" class="mt-0.5 size-5 shrink-0 text-signal-bright" />
+            <span>Lun–Ven 9h–12h30 · 14h–19h &nbsp;|&nbsp; Sam 9h–18h &nbsp;|&nbsp; Dim fermé</span>
+          </p>
+        </div>
+      </div>
+
+      <div data-reveal>
+        <div class="rounded-2xl border border-ink-700 bg-ink-900 p-7 lg:p-9">
+          <h3 class="font-display text-2xl font-semibold uppercase tracking-tight text-white">
+            Ou laissez-nous un message
+          </h3>
+          <p class="mt-2 text-sm text-chrome-400">
+            Réponse sous 24 h ouvrées. Pour une urgence, préférez le téléphone.
+          </p>
+
+          {/*
+            Netlify Forms: the `netlify` attribute is all the backend this needs.
+            Plain HTML POST, so it still submits with JS disabled. Deploying to
+            Vercel instead? See README — the form needs a real handler there.
+          */}
+          <form
+            name="contact"
+            method="POST"
+            data-netlify="true"
+            netlify-honeypot="bot-field"
+            class="mt-7 space-y-5"
+          >
+            <input type="hidden" name="form-name" value="contact" />
+            <p class="hidden">
+              <label>Ne pas remplir : <input name="bot-field" tabindex="-1" autocomplete="off" /></label>
+            </p>
+
+            <div class="grid gap-5 sm:grid-cols-2">
+              <div>
+                <label for="nom" class="block font-display text-sm font-medium uppercase tracking-wider text-chrome-300">
+                  Nom <span class="text-signal-bright" aria-hidden="true">*</span>
+                </label>
+                <input
+                  id="nom"
+                  name="nom"
+                  type="text"
+                  required
+                  autocomplete="name"
+                  class="mt-2 w-full rounded-lg border border-ink-600 bg-ink-950 px-4 py-3 text-chrome-100 placeholder:text-chrome-400 focus:border-signal focus:outline-none"
+                />
+              </div>
+              <div>
+                <label for="telephone" class="block font-display text-sm font-medium uppercase tracking-wider text-chrome-300">
+                  Téléphone <span class="text-signal-bright" aria-hidden="true">*</span>
+                </label>
+                <input
+                  id="telephone"
+                  name="telephone"
+                  type="tel"
+                  required
+                  autocomplete="tel"
+                  inputmode="tel"
+                  class="mt-2 w-full rounded-lg border border-ink-600 bg-ink-950 px-4 py-3 text-chrome-100 placeholder:text-chrome-400 focus:border-signal focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label for="sujet" class="block font-display text-sm font-medium uppercase tracking-wider text-chrome-300">
+                Votre demande
+              </label>
+              <select
+                id="sujet"
+                name="sujet"
+                class="mt-2 w-full rounded-lg border border-ink-600 bg-ink-950 px-4 py-3 text-chrome-100 focus:border-signal focus:outline-none"
+              >
+                <option value="">— Choisir —</option>
+                {services.map((s) => <option value={s.title}>{s.title}</option>)}
+                <option value="Autre">Autre</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="message" class="block font-display text-sm font-medium uppercase tracking-wider text-chrome-300">
+                Message
+              </label>
+              <textarea
+                id="message"
+                name="message"
+                rows="4"
+                placeholder="Modèle du véhicule, symptôme constaté, pièce recherchée…"
+                class="mt-2 w-full resize-y rounded-lg border border-ink-600 bg-ink-950 px-4 py-3 text-chrome-100 placeholder:text-chrome-400 focus:border-signal focus:outline-none"
+              ></textarea>
+            </div>
+
+            <button
+              type="submit"
+              class="w-full rounded-full bg-signal px-8 py-4 font-display text-lg font-semibold tracking-wide text-white transition-colors hover:bg-signal-hover"
+            >
+              Envoyer ma demande
+            </button>
+
+            <p class="text-xs leading-relaxed text-chrome-400">
+              Les informations transmises servent uniquement à traiter votre demande et ne sont
+              pas cédées à des tiers. Vous disposez d'un droit d'accès, de rectification et de
+              suppression&nbsp;: <a href={`tel:${phone.tel}`} class="underline underline-offset-2 hover:text-chrome-100">{phone.display}</a>.
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

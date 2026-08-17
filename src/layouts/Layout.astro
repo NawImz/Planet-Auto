@@ -1,0 +1,108 @@
+---
+import { business, reviews, reviewsVerified, SITE_URL } from '../config/business.js';
+import { toOpeningHoursSpecification } from '../lib/hours.js';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Path only, e.g. "/" or "/mentions-legales". */
+  path?: string;
+}
+
+const { title, description, path = '/' } = Astro.props;
+const canonical = new URL(path, SITE_URL).href;
+const { address, phone, rating, hours } = business;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'AutoRepair',
+  '@id': `${SITE_URL}#business`,
+  name: business.name,
+  description:
+    "Atelier de réparation automobile et distributeur de pièces détachées à Épinay-sur-Seine : entretien, freinage, diagnostic, pneus et pièces toutes marques.",
+  url: SITE_URL,
+  telephone: phone.tel,
+  priceRange: business.priceRange,
+  currenciesAccepted: business.currenciesAccepted,
+  paymentAccepted: business.paymentAccepted.join(', '),
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: address.street,
+    postalCode: address.postalCode,
+    addressLocality: address.city,
+    addressCountry: address.country,
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: address.lat,
+    longitude: address.lng,
+  },
+  openingHoursSpecification: toOpeningHoursSpecification(hours),
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: rating.value,
+    reviewCount: rating.count,
+    bestRating: 5,
+  },
+  areaServed: [
+    { '@type': 'City', name: 'Épinay-sur-Seine' },
+    { '@type': 'City', name: 'Saint-Denis' },
+    { '@type': 'City', name: 'Villetaneuse' },
+    { '@type': 'City', name: "L'Île-Saint-Denis" },
+  ],
+  // Individual reviews are only declared once their text is the genuine
+  // Google wording. Publishing placeholder copy as structured review data
+  // would be feeding Google fabricated testimonials.
+  ...(reviewsVerified
+    ? {
+        review: reviews.map((r) => ({
+          '@type': 'Review',
+          author: { '@type': 'Person', name: r.author },
+          reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5 },
+          reviewBody: r.text,
+        })),
+      }
+    : {}),
+};
+---
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0a0b0d" />
+    <meta name="geo.region" content="FR-93" />
+    <meta name="geo.placename" content="Épinay-sur-Seine" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:site_name" content={business.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <script is:inline>
+      // Flip off the no-JS fallback before first paint so reveal elements start
+      // hidden only when GSAP will actually be there to reveal them.
+      document.documentElement.classList.remove('no-js');
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('reveal-disabled');
+      }
+    </script>
+
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <slot />
+  </body>
+</html>

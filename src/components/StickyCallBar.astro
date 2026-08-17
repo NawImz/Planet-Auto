@@ -1,0 +1,42 @@
+---
+import { business } from '../config/business.js';
+import Icon from './Icon.astro';
+
+const mapsQuery = encodeURIComponent(
+  `${business.name}, ${business.address.street}, ${business.address.postalCode} ${business.address.city}`
+);
+---
+
+{/*
+  Mobile-only, fixed to the bottom edge. This is the primary conversion path:
+  for a local garage the visitor's reflex is to call, and the bottom edge is
+  where the thumb already is. Padded for the iOS home indicator.
+*/}
+<div
+  data-call-bar
+  class="fixed inset-x-0 bottom-0 z-50 border-t border-ink-700 bg-ink-950/95 backdrop-blur-md lg:hidden"
+  style="padding-bottom:env(safe-area-inset-bottom)"
+>
+  <div class="flex items-stretch gap-2 p-3">
+    <a
+      href={`tel:${business.phone.tel}`}
+      data-analytics="call-sticky"
+      class="flex flex-[3] items-center justify-center gap-2.5 rounded-xl bg-signal py-3.5 font-display text-lg font-semibold tracking-wide text-white active:bg-signal-hover"
+    >
+      <Icon name="phone" class="size-5" />
+      Appeler maintenant
+    </a>
+    <a
+      href={`https://www.google.com/maps/search/?api=1&query=${mapsQuery}`}
+      target="_blank"
+      rel="noopener"
+      class="flex flex-1 flex-col items-center justify-center gap-0.5 rounded-xl border border-ink-600 px-3 text-chrome-100 active:bg-ink-800"
+    >
+      <Icon name="pin" class="size-5" />
+      <span class="font-display text-xs font-medium uppercase tracking-wider">Y aller</span>
+    </a>
+  </div>
+</div>
+
+{/* Reserves the strip the fixed bar covers so the footer is never trapped under it. */}
+<div class="h-[var(--call-bar-h)]" aria-hidden="true"></div>

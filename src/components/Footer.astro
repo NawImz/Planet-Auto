@@ -16,13 +16,15 @@ const links = [
 ---
 
 {/* The one dark surface on the page — the ink from the mark, so the footer
-    closes the page without introducing a colour the sign does not have. */}
-<footer class="bg-ink text-white/70" style="--logo-ring: #ffffff">
+    closes the page without introducing a colour the sign does not have.
+    The mark's own steel and crimson are too close to this ground to stay
+    legible, so both are lifted here rather than the mark being redrawn. */}
+<footer class="bg-ink text-white/70" style="--logo-steel: #a8b5c2; --logo-ring: #e8394d">
   <div class="mx-auto max-w-6xl px-5 py-16 lg:px-8">
     <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
       <div class="lg:col-span-2">
         <span class="inline-flex items-center gap-2.5">
-          <LogoMark class="size-10" />
+          <LogoMark class="w-14" />
           <span class="font-display text-2xl font-extrabold uppercase leading-none tracking-[-0.03em]">
             <span class="text-white">Planet</span>&nbsp;<span class="text-white/55">Auto</span>
           </span>

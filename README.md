@@ -74,19 +74,31 @@ ancienne que la liste réelle des fournisseurs : à valider.
 
 Tout vient de la devanture, pas d'une charte inventée.
 
-**Le logo** (`src/components/LogoMark.astro`) est redessiné d'après l'enseigne :
-une turbine de six pales autour d'un moyeu à cinq boulons, ceinte d'un anneau
-orbital incliné — le « Planet » du nom. Il est **généré**, pas écrit à la main :
+**Le logo** (`src/components/LogoMark.astro`) est le logo officiel du garage,
+vectorisé depuis l'original fourni (`brand/logo-source.png`) — spirale acier,
+moyeu de jante, anneau orbital cramoisi effilé.
 
 ```bash
-node scripts/gen-logo.mjs > src/components/LogoMark.astro
-node scripts/preview-logo.mjs logo.png 400   # pour le regarder
+npm i -D potrace
+node scripts/trace-logo.mjs brand/logo-source.png > src/components/LogoMark.astro
+npm uninstall potrace
+node scripts/preview-logo.mjs logo.png 600            # sur fond clair
+node scripts/preview-logo.mjs logo.png 200 '#16232E'  # sur fond sombre
 ```
 
-Modifier `scripts/gen-logo.mjs`, pas le composant. Les pales sont la partie
-visible de cercles qui se recouvrent, découpés au rayon extérieur ; leurs tons
-**alternent** clair/sombre. Un dégradé continu autour du disque donnait une
-sphère éclairée au lieu d'une turbine.
+Le composant est **généré** : modifier le script ou l'artwork, pas le SVG. Les
+deux couleurs sont tracées séparément puis recomposées — vectoriser l'image
+d'un seul tenant soudait l'anneau à la spirale à chaque point de contact. Le
+`viewBox` est recadré sur le tracé, sinon les marges blanches de l'image
+seraient dimensionnées avec le reste.
+
+`potrace` n'est pas une dépendance du projet : il embarque une version de jimp
+sous avis de sécurité, et ne sert que ponctuellement quand l'artwork change.
+
+Le mark est **au format paysage** (ratio ≈ 1,71). Le dimensionner en largeur
+(`w-12`, `w-16`), jamais avec un utilitaire carré qui rognerait l'anneau. Ses
+couleurs passent par `--logo-steel` et `--logo-ring`, relevées dans le footer
+pour rester lisibles sur fond sombre.
 
 **La palette** est prise sur l'enseigne : panneau blanc, encre bleu acier,
 cramoisi. Sur fond clair un seul rouge suffit — `#C8102E` donne 5,88:1 aussi
@@ -132,8 +144,10 @@ src/
   components/          ← Hero, Services, WhyUs, Reviews, Location, Contact…
   scripts/main.ts      ← GSAP, Lenis, menu, badge ouvert/fermé, composeur
   styles/global.css    ← tokens de design
+brand/
+  logo-source.png      ← artwork d'origine, source de la vectorisation
 scripts/
-  gen-logo.mjs         ← géométrie du logo
+  trace-logo.mjs       ← vectorise le logo en composant Astro
   preview-logo.mjs     ← rendu PNG du logo
   shoot.mjs            ← captures + audit
   check.mjs            ← tests fonctionnels
@@ -161,7 +175,8 @@ désactive Lenis et toutes les animations.
 2. `src/assets/` — remplacer les quatre photos (mêmes noms de fichiers).
 3. `src/styles/global.css` — le bloc `@theme`. **Revérifier les contrastes** si
    l'accent change : les tests ne vérifient pas les couleurs.
-4. `scripts/gen-logo.mjs` — ou remplacer `LogoMark.astro` par le logo du client.
+4. `brand/logo-source.png` — déposer le logo du client et relancer
+   `scripts/trace-logo.mjs`.
 
 Puis `SITE_URL` en haut de `business.js`, et les mentions légales.
 

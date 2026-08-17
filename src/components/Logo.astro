@@ -9,9 +9,11 @@ interface Props {
   title?: string;
 }
 
+// The mark is landscape, so it is sized by width; a square utility would crop
+// the orbit ring at both ends.
 const {
   class: className = '',
-  markClass = 'size-9',
+  markClass = 'w-12',
   layout = 'inline',
   title,
 } = Astro.props;

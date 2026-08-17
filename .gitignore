@@ -21,3 +21,6 @@ npm-debug.log*
 
 # aperçu fichier unique (régénérable via npm run preview:single)
 preview/
+
+# checklist générée (régénérable via node brief/build.mjs)
+brief/avant-mise-en-ligne.html

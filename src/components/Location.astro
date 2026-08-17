@@ -104,21 +104,25 @@ const mapEmbed = `https://maps.google.com/maps?q=${query}&z=16&output=embed`;
               >
                 Afficher la carte
               </button>
-              <a
-                href={googleMaps}
-                target="_blank"
-                rel="noopener"
-                data-map-fallback
-                class="inline-flex items-center gap-2 border border-rule-strong bg-surface px-5 py-3 font-display font-semibold text-ink transition-colors hover:border-ink"
-              >
-                Ouvrir dans Google Maps
-              </a>
             </div>
           </div>
-          <p class="mt-2.5 text-sm text-steel-light">
-            La carte n'est chargée qu'à votre demande&nbsp;: aucun traceur Google
-            n'est déposé tant que vous ne cliquez pas.
-          </p>
+
+          {/* Outside the frame on purpose: whatever the embed does — loads,
+              refuses, or is blocked by the host — this link is still there. */}
+          <div class="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1">
+            <a
+              href={googleMaps}
+              target="_blank"
+              rel="noopener"
+              data-map-fallback
+              class="inline-flex min-h-11 items-center text-sm font-semibold text-crimson underline decoration-crimson/40 underline-offset-4 transition-colors hover:decoration-crimson"
+            >
+              Ouvrir dans Google Maps
+            </a>
+            <p class="text-sm text-steel-light">
+              Aucun traceur n'est déposé tant que la carte n'est pas affichée.
+            </p>
+          </div>
         </div>
 
         <div class="relative overflow-hidden" data-reveal data-parallax>

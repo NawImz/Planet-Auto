@@ -214,11 +214,18 @@ if (mapPanel) {
   loadButton?.classList.add('inline-flex');
   fallbackLink?.classList.add('text-sm', 'text-steel');
 
+  /*
+    No attempt is made to detect a refused embed. A blocked iframe and a loaded
+    one are indistinguishable from script — both fire `load`, both report
+    contentDocument as null — because cross-origin isolation is meant to hide
+    exactly that. So the design stops depending on it: the "open in Google Maps"
+    link lives outside the frame and stays put, and an empty embed costs the
+    visitor a link they can already see rather than their only way through.
+  */
   loadButton?.addEventListener('click', () => {
     const iframe = document.createElement('iframe');
     iframe.src = mapPanel.dataset.mapSrc ?? '';
     iframe.title = mapPanel.dataset.mapTitle ?? 'Carte';
-    iframe.loading = 'lazy';
     iframe.referrerPolicy = 'no-referrer-when-downgrade';
     iframe.className = 'absolute inset-0 size-full border-0';
     mapPanel.replaceChildren(iframe);

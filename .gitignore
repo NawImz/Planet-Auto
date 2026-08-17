@@ -18,3 +18,6 @@ npm-debug.log*
 
 # macOS
 .DS_Store
+
+# aperçu fichier unique (régénérable via npm run preview:single)
+preview/

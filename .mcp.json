@@ -5,7 +5,9 @@
       "command": "npx",
       "args": [
         "-y",
-        "@playwright/mcp"
+        "@playwright/mcp",
+        "--browser",
+        "chromium"
       ],
       "env": {}
     },
@@ -14,7 +16,9 @@
       "command": "npx",
       "args": [
         "-y",
-        "chrome-devtools-mcp"
+        "chrome-devtools-mcp",
+        "--headless",
+        "--isolated"
       ],
       "env": {}
     },

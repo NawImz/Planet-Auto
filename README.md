@@ -8,7 +8,7 @@ données et sans serveur.
 npm install
 npm run dev             # http://localhost:4321
 npm run build           # -> dist/
-npm run qa              # build + typecheck + 24 tests fonctionnels
+npm run qa              # build + typecheck + 28 tests fonctionnels
 npm run preview:single  # aperçu en un seul fichier HTML
 ```
 
@@ -32,20 +32,15 @@ Les quatre avis sont le libellé exact transmis par le client, mais les notes
 n'accompagnaient pas les textes : elles sont déduites du contenu (les quatre
 disent explicitement recommander) et valent 5. À vérifier sur la fiche Google.
 
-### 3. Vérifier les coordonnées GPS
+### 3. Renseigner les coordonnées GPS
 
 `business.address.lat` / `.lng` sont **approximatives** — elles n'ont pas pu
-être géocodées. Elles ne servent qu'à cadrer la carte et le champ `geo` du
-JSON-LD. Les boutons « Itinéraire » et « Waze » n'en dépendent pas : ils
-utilisent une requête textuelle qui résout correctement quoi qu'il arrive.
+être géocodées. Plus rien d'affiché n'en dépend : la carte, l'itinéraire et
+Waze passent tous par une requête texte. Elles ne servent plus qu'au champ
+`geo` du JSON-LD, que Google recoupe avec sa propre fiche.
 
 Pour les corriger : fiche Google Maps → clic droit sur le marqueur → copier les
 coordonnées.
-
-### 4. Valider les marques
-
-La liste `brands` a été relevée sur l'auvent. Une enseigne peut être plus
-ancienne que la liste réelle des fournisseurs : à valider.
 
 ---
 
@@ -137,9 +132,17 @@ scripts/
 
 ## Autres choix techniques
 
-**OpenStreetMap plutôt que Google Maps.** Une iframe Google dépose des traceurs
-avant tout consentement, ce qui imposerait un bandeau cookies (position CNIL).
-OSM n'en dépose pas : le site n'a besoin d'aucun bandeau.
+**Carte en clic-pour-charger.** L'embed OpenStreetMap ne prend qu'une boîte
+englobante : il ne pouvait être juste que si `address.lat`/`lng` l'étaient, or
+elles n'ont pas pu être géocodées. L'embed Google, lui, accepte une requête
+texte et résout la fiche lui-même, donc le point est bon quelles que soient les
+coordonnées stockées.
+
+En contrepartie une iframe Google dépose des cookies dès qu'elle entre dans le
+document. Elle n'est donc pas chargée : le panneau reste statique jusqu'à ce
+que le visiteur demande la carte (motif « clic-pour-charger » recommandé par la
+CNIL). Le site n'a toujours besoin d'aucun bandeau de consentement, et un test
+le vérifie à chaque passage.
 
 **Aucun appel réseau externe.** Polices auto-hébergées, images converties en
 WebP au build. ~270 kB transférés, JS compris.
@@ -151,7 +154,7 @@ désactive Lenis et toutes les animations.
 ## Dupliquer pour un autre garage
 
 1. `src/config/business.js` — nom, téléphone, adresse, horaires, note, services,
-   avis, marques. Aucun composant ne contient de donnée client
+   avis. Aucun composant ne contient de donnée client
    en dur.
 2. `src/assets/` — remplacer les quatre photos (mêmes noms de fichiers).
 3. `src/styles/global.css` — le bloc `@theme`. **Revérifier les contrastes** si
@@ -164,7 +167,7 @@ Puis `SITE_URL` en haut de `business.js`, et les mentions légales.
 ## QA
 
 ```bash
-npm run qa                                         # typecheck + 24 tests
+npm run qa                                         # typecheck + 28 tests
 npm run preview                                    # dans un terminal
 npm run qa:shots -- http://localhost:4321 shots    # captures + audit
 ```

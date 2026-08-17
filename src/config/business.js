@@ -112,25 +112,6 @@ export const services = [
 ];
 
 /**
- * Equipment brands, read off the awning. Naming them is what tells a
- * professional buyer the counter stocks the real thing rather than no-names.
- * To be confirmed with the garage before publishing — a sign can be older than
- * the current supplier list.
- */
-export const brands = [
-  'Valeo',
-  'Bosch',
-  'Monroe',
-  'Purflux',
-  'Ferodo',
-  'Brembo',
-  'Bosal',
-  'Moog',
-  'Gabriel',
-  'Delphi',
-];
-
-/**
  * Avis Google reproduits mot pour mot, transmis par le client.
  *
  * `text` doit rester le libellé exact publié sur la fiche. Un avis raccourci

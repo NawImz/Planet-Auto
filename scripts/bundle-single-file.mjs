@@ -100,25 +100,11 @@ if (icoRef) {
   html = html.replace(icoRef[1], dataUri(buf, 'image/svg+xml'));
 }
 
-/* ---------- map iframe ---------- */
+/* ---------- map ---------- */
 
-// The CSP blocks openstreetmap.org, so the embed would render as a dead grey
-// rectangle. Swap it for a panel that says so and keeps the route links, which
-// are the part that actually gets someone to the garage.
-const iframe = html.match(/<iframe[^>]*openstreetmap[^>]*>\s*<\/iframe>/);
-if (iframe) {
-  html = html.replace(
-    iframe[0],
-    `<div class="flex h-[320px] w-full flex-col items-center justify-center gap-3 bg-paper-deep px-6 text-center lg:h-[400px]">
-      <svg class="size-8 text-steel-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M19 10.5c0 5-7 10.5-7 10.5s-7-5.5-7-10.5a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10.3" r="2.6"/></svg>
-      <p class="max-w-xs text-sm leading-relaxed text-steel">
-        La carte OpenStreetMap ne s'affiche pas dans cet aperçu&nbsp;: la page est
-        isolée et ne peut appeler aucun service externe. Elle s'affiche
-        normalement sur le site déployé.
-      </p>
-    </div>`
-  );
-}
+// Nothing to strip: the map is click-to-load, so no iframe exists in the built
+// HTML. Inside a sandboxed preview the button cannot reach Google, but the
+// panel's "open in Google Maps" link works from anywhere.
 
 /* ---------- gallery identity ---------- */
 

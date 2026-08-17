@@ -8,17 +8,24 @@ import Icon from './Icon.astro';
 const { address, hours } = business;
 
 const fullAddress = `${address.street}, ${address.postalCode} ${address.city}`;
-// Text query, not coordinates: resolves to the right pin even while
-// address.lat/lng remain unverified.
+
+/*
+  Everything here addresses the map by text, never by coordinates.
+
+  OpenStreetMap's embed only accepts a bounding box, so it could only ever be as
+  right as address.lat/lng — which are unverified, and geocoding them was not
+  possible. Google's embed takes a query string and resolves the listing itself,
+  so the pin is correct whatever the stored coordinates say.
+
+  The trade is that a Google iframe sets cookies the moment it loads. It is
+  therefore not loaded: the panel below stays static until the visitor asks for
+  the map, which is the CNIL's click-to-load pattern and keeps the site free of
+  a consent banner.
+*/
 const query = encodeURIComponent(`${business.name}, ${fullAddress}`);
 const googleMaps = `https://www.google.com/maps/search/?api=1&query=${query}`;
 const waze = `https://waze.com/ul?q=${query}`;
-
-// OpenStreetMap rather than a Google Maps iframe: no API key, and no
-// third-party tracker fires before consent, so the page needs no cookie banner.
-const d = 0.006;
-const bbox = [address.lng - d, address.lat - d / 2, address.lng + d, address.lat + d / 2].join('%2C');
-const osm = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${address.lat}%2C${address.lng}`;
+const mapEmbed = `https://maps.google.com/maps?q=${query}&z=16&output=embed`;
 ---
 
 <section id="acces" class="scroll-mt-20 border-t border-rule bg-paper py-section">
@@ -78,23 +85,39 @@ const osm = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=
 
       <div class="flex flex-col gap-6">
         <div data-reveal>
-          <div class="overflow-hidden border border-rule">
-            <iframe
-              src={osm}
-              title={`Carte : ${business.name}, ${fullAddress}`}
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              class="h-[320px] w-full border-0 lg:h-[400px]"
-            ></iframe>
+          <div
+            class="relative h-[320px] overflow-hidden border border-rule bg-paper-deep lg:h-[400px]"
+            data-map
+            data-map-src={mapEmbed}
+            data-map-title={`Carte Google : ${business.name}, ${fullAddress}`}
+          >
+            <div class="flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
+              <Icon name="pin" class="size-9 text-crimson" />
+              <p class="max-w-xs text-ink">
+                <span class="block font-display text-lg font-bold">{business.name}</span>
+                <span class="mt-1 block text-[0.95rem] text-steel">{fullAddress}</span>
+              </p>
+              <button
+                type="button"
+                data-map-load
+                class="hidden items-center gap-2 border border-rule-strong bg-surface px-5 py-3 font-display font-semibold text-ink transition-colors hover:border-ink"
+              >
+                Afficher la carte
+              </button>
+              <a
+                href={googleMaps}
+                target="_blank"
+                rel="noopener"
+                data-map-fallback
+                class="inline-flex items-center gap-2 border border-rule-strong bg-surface px-5 py-3 font-display font-semibold text-ink transition-colors hover:border-ink"
+              >
+                Ouvrir dans Google Maps
+              </a>
+            </div>
           </div>
           <p class="mt-2.5 text-sm text-steel-light">
-            Carte&nbsp;: OpenStreetMap. Elle ne s'affiche pas&nbsp;?
-            <a
-              href={googleMaps}
-              target="_blank"
-              rel="noopener"
-              class="underline underline-offset-2 transition-colors hover:text-ink"
-            >Ouvrir l'itinéraire</a>.
+            La carte n'est chargée qu'à votre demande&nbsp;: aucun traceur Google
+            n'est déposé tant que vous ne cliquez pas.
           </p>
         </div>
 

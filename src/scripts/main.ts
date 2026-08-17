@@ -189,6 +189,38 @@ if (menuToggle && mobileNav) {
 }
 
 /* ------------------------------------------------------------------ *
+ * Click-to-load map
+ *
+ * A Google Maps iframe sets cookies the moment it is in the document, which
+ * would oblige the site to carry a consent banner. Nothing is embedded until
+ * the visitor asks for it. Without JS the panel keeps its "open in Google Maps"
+ * link, so the address is never a dead end.
+ * ------------------------------------------------------------------ */
+
+const mapPanel = document.querySelector<HTMLElement>('[data-map]');
+
+if (mapPanel) {
+  const loadButton = mapPanel.querySelector<HTMLButtonElement>('[data-map-load]');
+  const fallbackLink = mapPanel.querySelector<HTMLAnchorElement>('[data-map-fallback]');
+
+  // The button is hidden in the markup and revealed here: with JS off it would
+  // do nothing, and a control that does nothing is worse than no control.
+  loadButton?.classList.remove('hidden');
+  loadButton?.classList.add('inline-flex');
+  fallbackLink?.classList.add('text-sm', 'text-steel');
+
+  loadButton?.addEventListener('click', () => {
+    const iframe = document.createElement('iframe');
+    iframe.src = mapPanel.dataset.mapSrc ?? '';
+    iframe.title = mapPanel.dataset.mapTitle ?? 'Carte';
+    iframe.loading = 'lazy';
+    iframe.referrerPolicy = 'no-referrer-when-downgrade';
+    iframe.className = 'absolute inset-0 size-full border-0';
+    mapPanel.replaceChildren(iframe);
+  });
+}
+
+/* ------------------------------------------------------------------ *
  * Open / closed badge
  *
  * Rendered at build time, so a cached page would otherwise show a stale state.

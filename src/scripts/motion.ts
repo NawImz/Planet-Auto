@@ -11,7 +11,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 export function initMotion() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  spinWheel();
   drawBands();
   revealHeroPhoto();
   parallaxPhotos();
@@ -21,40 +20,28 @@ export function initMotion() {
 }
 
 /* ------------------------------------------------------------------ *
- * The mark is a wheel, so it turns
+ * The mark does not turn — and cannot
  *
- * Only the spiral group moves; the orbit ring stays put, because a wheel
- * spinning inside a fixed orbit is the thing the logo draws. One settling
- * rotation on load, then a half-turn on hover — no idle loop, which would
- * pull the eye away from the copy and keep a compositor layer awake.
+ * There was a hover spin here: the spiral is a wheel, so it turned inside its
+ * fixed orbit. It had to go, and not because of a bug in the animation.
  *
- * The hub comes from the markup as svgOrigin, in viewBox units. It has to be
- * svgOrigin and not transformOrigin: GSAP resolves transformOrigin against the
- * element's own bounding box and takes no notice of transform-box: view-box,
- * so the CSS origin this used to rely on placed the pivot a whole bbox-width
- * off. The spiral swung out of the frame and stayed there — on a touch device,
- * where the tap fires mouseenter, that read as the wheel vanishing on tap.
+ * The mark is vectorised from a flat picture of the shopfront sign, one trace
+ * per colour. Where the crimson orbit crosses the wheel, the sign shows
+ * crimson — so the grey trace has that band missing from it. It was never
+ * drawn underneath; there is nothing there to draw. At rest the orbit sits
+ * exactly over the gap and the wheel reads as whole. Rotate the wheel by any
+ * visible amount and the gap travels out from under the orbit and opens as a
+ * hole through the spokes.
+ *
+ * No pivot fixes that, and neither does a rotational-symmetry repair: the
+ * blades do not repeat at 3, 4, 5 or 6 fold, so unioning rotated copies fills
+ * the wheel into a solid disc.
+ *
+ * The spin comes back the day the garage can supply the original vector file
+ * from whoever made the sign — the wheel would then be a complete shape with
+ * the orbit as a separate layer. data-logo-wheel already carries the hub in
+ * viewBox units for that.
  * ------------------------------------------------------------------ */
-function spinWheel() {
-  const header = document.querySelector('[data-header]');
-  const wheel = header?.querySelector<SVGGElement>('[data-logo-wheel]');
-  if (!wheel) return;
-
-  // "840 361" — written by scripts/trace-logo.mjs, which knows where the hub
-  // is. Falling back to the bbox centre keeps the mark spinning about
-  // something sane if the attribute is ever emptied.
-  const svgOrigin = wheel.dataset.logoWheel?.trim() || undefined;
-  const spin = { svgOrigin, ease: 'power3.out' };
-
-  gsap.from(wheel, { ...spin, rotation: -150, duration: 1.15 });
-
-  const trigger = wheel.closest('a');
-  let turns = 0;
-  trigger?.addEventListener('mouseenter', () => {
-    turns += 180;
-    gsap.to(wheel, { ...spin, rotation: turns, duration: 0.9, ease: 'power2.out' });
-  });
-}
 
 /* ------------------------------------------------------------------ *
  * The crimson band gets painted

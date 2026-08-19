@@ -32,45 +32,33 @@ const scrollTo = (page, y) =>
     else window.scrollTo(0, target);
   }, y);
 
-/* ---------- the wheel turns, and stops ---------- */
+/* ---------- the wheel must stay exactly where it was drawn ---------- */
 {
   const { ctx, page } = await openPage();
-  const rot = (sel) =>
-    page.evaluate((s) => {
-      const el = document.querySelector(s);
+
+  // Régression. La roue tournait — au chargement, puis d'un demi-tour au
+  // survol. Le tracé ne le supporte pas : la bande que l'anneau rouge
+  // traverse est absente du gris, parce qu'elle n'a jamais été dessinée
+  // dessous. À l'arrêt l'anneau la couvre exactement ; dès que la roue
+  // pivote, le trou sort de sous l'anneau et s'ouvre dans les rayons.
+  //
+  // Le test porte donc sur l'absence de rotation, pas sur sa justesse.
+  const rotation = () =>
+    page.evaluate(() => {
+      const el = document.querySelector('[data-header] [data-logo-wheel]');
       const t = getComputedStyle(el).transform;
       if (!t || t === 'none') return 0;
       const [a, b] = t.match(/matrix\(([^)]+)\)/)[1].split(',').map(Number);
-      return Math.round((Math.atan2(b, a) * 180) / Math.PI);
-    }, sel);
-
-  const early = await rot('[data-header] [data-logo-wheel]');
-  await page.waitForTimeout(1600);
-  const settled = await rot('[data-header] [data-logo-wheel]');
-
-  check('la roue tourne au chargement', early !== settled, `${early}° → ${settled}°`);
-  check('la roue revient droite', Math.abs(settled) <= 1, `${settled}°`);
-
-  // Hover drives a half turn.
-  const centre = () =>
-    page.evaluate(() => {
-      const r = document.querySelector('[data-header] [data-logo-wheel]').getBoundingClientRect();
-      return [r.x + r.width / 2, r.y + r.height / 2];
+      return Math.abs(Math.round((Math.atan2(b, a) * 180) / Math.PI));
     });
 
-  const before = await centre();
-  await page.hover('[data-header] a[href="#top"]');
-  await page.waitForTimeout(1100);
-  const hovered = await rot('[data-header] [data-logo-wheel]');
-  check('la roue repart au survol', Math.abs(hovered) > 100, `${hovered}°`);
+  await page.waitForTimeout(1600);
+  check('la roue n’est pas pivotée au chargement', (await rotation()) === 0, `${await rotation()}°`);
 
-  // Régression : la roue tournait autour d'un point situé une largeur de
-  // bbox trop loin, ce qui la sortait du cadre où elle était rognée — sur
-  // mobile, où le tap déclenche mouseenter, elle semblait disparaître. Une
-  // rotation autour de son moyeu laisse son centre où il est.
-  const after = await centre();
-  const drift = Math.hypot(after[0] - before[0], after[1] - before[1]);
-  check('la roue tourne sur elle-même, sans dériver', drift < 3, `${drift.toFixed(1)}px`);
+  await page.hover('[data-header] a[href="#top"]');
+  await page.waitForTimeout(1200);
+  check('la roue ne pivote pas au survol ni au tap', (await rotation()) === 0, `${await rotation()}°`);
+
   await ctx.close();
 }
 

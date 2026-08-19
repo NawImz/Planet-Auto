@@ -171,18 +171,18 @@ const { class: className = 'w-12', title } = Astro.props;
   aria-label={title}
 >
   <!--
-    The spiral is its own group so it can be spun independently of the orbit —
-    rotating the whole svg would carry the ring round with it, which is not what
-    a wheel does.
+    The spiral is its own group, and it is deliberately not animated.
 
-    data-logo-wheel carries the hub, in viewBox units, and motion.ts hands it
-    to GSAP as svgOrigin. It used to be a CSS transform-origin paired with
-    transform-box: view-box, which is correct CSS and wrong here: GSAP writes
-    its own transform attribute and resolves transform-origin against the
-    element's bounding box, ignoring transform-box. It therefore spun the
-    spiral around (bbox.x + ${wheelCx}, bbox.y + ${wheelCy}) — far outside the viewBox — and a
-    tap on the logo flung the wheel out of the frame, where it was clipped and
-    looked deleted. svgOrigin is user-space and unambiguous.
+    This mark is traced from a flat photograph of the sign, one pass per
+    colour. Where the crimson orbit crosses the wheel the sign shows crimson,
+    so the grey trace has that band missing — it was never drawn underneath.
+    At rest the orbit covers the gap exactly and the wheel reads as whole;
+    rotate the wheel and the gap travels out and opens a hole through the
+    spokes. See the comment on the removed spin in src/scripts/motion.ts.
+
+    data-logo-wheel keeps the hub at (${wheelCx}, ${wheelCy}) in viewBox units. Nothing reads
+    it today; it is what a future spin would pivot on, once the original
+    vector artwork exists and the wheel is a complete shape.
   -->
   <g
     data-logo-wheel="${wheelCx} ${wheelCy}"

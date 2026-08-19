@@ -1,0 +1,54 @@
+---
+/*
+  Consent gate for the Google Maps embed.
+
+  Google's map sets cookies (NID and friends) the moment the iframe enters the
+  document, and the CNIL treats those as requiring prior consent. So the site
+  carries this bar for exactly one reason: it is the only third party on the
+  page. There is no analytics, no advertising, no tag manager — and the copy
+  says so, because a banner that overstates what it covers trains people to
+  dismiss it.
+
+  The choice is stored in localStorage, not a cookie: nothing is written until
+  the visitor has actually chosen, which is the point.
+*/
+---
+
+<div
+  data-consent
+  hidden
+  class="fixed inset-x-0 bottom-0 z-[60] border-t border-rule bg-surface/98 backdrop-blur-md"
+  role="dialog"
+  aria-labelledby="consent-title"
+  aria-describedby="consent-body"
+>
+  <div class="mx-auto flex max-w-6xl flex-col gap-4 px-5 py-5 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+    <div class="max-w-2xl">
+      <p id="consent-title" class="font-display text-base font-bold text-ink">
+        Afficher la carte Google&nbsp;?
+      </p>
+      <p id="consent-body" class="mt-1 text-[0.95rem] leading-relaxed text-steel">
+        La carte est fournie par Google, qui dépose des cookies. C'est le seul
+        service tiers de ce site&nbsp;: aucune mesure d'audience, aucune publicité.
+        Si vous refusez, l'adresse et l'itinéraire restent accessibles.
+      </p>
+    </div>
+
+    <div class="flex shrink-0 gap-3">
+      <button
+        type="button"
+        data-consent-accept
+        class="inline-flex min-h-11 items-center justify-center bg-crimson px-6 py-3 font-display font-bold text-white transition-colors hover:bg-crimson-deep"
+      >
+        Accepter
+      </button>
+      <button
+        type="button"
+        data-consent-refuse
+        class="inline-flex min-h-11 items-center justify-center border border-rule-strong px-6 py-3 font-display font-semibold text-ink transition-colors hover:border-ink"
+      >
+        Refuser
+      </button>
+    </div>
+  </div>
+</div>

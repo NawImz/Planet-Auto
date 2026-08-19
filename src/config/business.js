@@ -112,6 +112,44 @@ export const services = [
 ];
 
 /**
+ * Questions fréquentes.
+ *
+ * Elles servent deux choses à la fois : répondre aux visiteurs, et donner à
+ * Google des formulations proches de ce que les gens tapent réellement
+ * (« horaires garage Épinay », « pièces auto particuliers 93800 »).
+ *
+ * Chaque réponse ne s'appuie que sur des faits confirmés par le garage. Rien
+ * ici ne doit être supposé : une FAQ inventée est une promesse commerciale que
+ * le comptoir devra tenir.
+ */
+export const faq = [
+  {
+    q: 'Quels sont les horaires de Planet Auto ?',
+    a: "Du lundi au vendredi de 9h à 12h30 puis de 14h à 19h, le samedi de 9h à 18h en continu. Fermé le dimanche.",
+  },
+  {
+    q: 'Où se trouve le garage à Épinay-sur-Seine ?',
+    a: "Au 80 avenue de la République, 93800 Épinay-sur-Seine, avec du stationnement devant l'atelier.",
+  },
+  {
+    q: 'Vendez-vous des pièces détachées aux particuliers ?',
+    a: "Oui. Planet Auto est distributeur de pièces détachées pour les particuliers comme pour les professionnels : freinage, filtration, batteries, amortisseurs, pièces moteur, huiles et accessoires, en stock au comptoir.",
+  },
+  {
+    q: 'Quelles réparations faites-vous à l’atelier ?',
+    a: "Mécanique générale, entretien et révision, diagnostic électronique, freinage, ainsi que le montage et l'équilibrage de pneus sur place.",
+  },
+  {
+    q: 'Quels moyens de paiement acceptez-vous ?',
+    a: 'Carte bancaire, paiement sans contact et espèces.',
+  },
+  {
+    q: 'Le garage est-il accessible aux personnes à mobilité réduite ?',
+    a: "Oui, le parking et l'entrée sont de plain-pied et accessibles.",
+  },
+];
+
+/**
  * Avis Google reproduits mot pour mot, transmis par le client.
  *
  * `text` doit rester le libellé exact publié sur la fiche. Un avis raccourci

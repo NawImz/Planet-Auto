@@ -4,6 +4,7 @@ import Lenis from 'lenis';
 import { business } from '../config/business.js';
 import { isOpenAt } from '../lib/hours.js';
 import { initMotion } from './motion.ts';
+import { initConsent } from './consent.ts';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -134,6 +135,8 @@ if (!prefersReducedMotion) {
 // After the generic pass, so the grouped cascades can reclaim the rows they
 // cover from it.
 initMotion();
+
+initConsent();
 
 /* ------------------------------------------------------------------ *
  * Header: solid background once the hero is behind it

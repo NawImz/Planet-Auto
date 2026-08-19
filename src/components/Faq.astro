@@ -1,0 +1,57 @@
+---
+import { faq, business } from '../config/business.js';
+import Icon from './Icon.astro';
+---
+
+{/*
+  Native <details>, not a scripted accordion: it opens without JavaScript, it is
+  keyboard-operable and announced correctly for free, and search engines read
+  the answers whether or not the panel is open.
+*/}
+<section id="faq" class="scroll-mt-20 border-t border-rule bg-paper py-section">
+  <div class="mx-auto max-w-6xl px-5 lg:px-8">
+    <div class="grid gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16">
+      <div>
+        <span class="band" data-reveal></span>
+        <h2 class="mt-5 font-display text-[clamp(1.9rem,4.5vw,2.9rem)] font-extrabold" data-reveal>
+          Questions<br />fréquentes
+        </h2>
+        <p class="mt-4 text-lg text-steel" data-reveal>
+          Et si la vôtre n'y est pas, le téléphone répond plus vite qu'une page.
+        </p>
+        <a
+          href={`tel:${business.phone.tel}`}
+          data-analytics="call-faq"
+          class="mt-5 inline-flex min-h-11 items-center gap-2.5 font-display text-lg font-bold text-crimson transition-colors hover:text-crimson-deep"
+          data-reveal
+        >
+          <Icon name="phone" class="size-4" />
+          {business.phone.display}
+        </a>
+      </div>
+
+      <div data-stagger>
+        <div class="border-t border-rule">
+          {faq.map((item) => (
+            <details class="group border-b border-rule" data-reveal>
+              <summary
+                class="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 font-display text-lg font-bold text-ink [&::-webkit-details-marker]:hidden"
+              >
+                {item.q}
+                <span
+                  class="grid size-7 shrink-0 place-items-center border border-rule-strong text-crimson transition-transform duration-200 group-open:rotate-45"
+                  aria-hidden="true"
+                >
+                  <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M12 5v14M5 12h14"></path>
+                  </svg>
+                </span>
+              </summary>
+              <p class="pb-5 pr-11 leading-relaxed text-steel">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

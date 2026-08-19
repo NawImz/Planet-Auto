@@ -1,5 +1,5 @@
 ---
-import { business, reviews, reviewsVerified, SITE_URL } from '../config/business.js';
+import { business, reviews, reviewsVerified, services, faq, SITE_URL } from '../config/business.js';
 import { toOpeningHoursSpecification } from '../lib/hours.js';
 import '../styles/global.css';
 
@@ -39,6 +39,21 @@ const schema = {
     longitude: address.lng,
   },
   openingHoursSpecification: toOpeningHoursSpecification(hours),
+  image: new URL('/og-image.jpg', SITE_URL).href,
+  logo: new URL('/favicon.svg', SITE_URL).href,
+  hasMap: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    `${business.name}, ${address.street}, ${address.postalCode} ${address.city}`
+  )}`,
+  // Naming the trades explicitly is what lets Google match the page to
+  // "réparation freinage Épinay" rather than only to the shop's own name.
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'Prestations et pièces',
+    itemListElement: services.map((s) => ({
+      '@type': 'Offer',
+      itemOffered: { '@type': 'Service', name: s.title, description: s.description },
+    })),
+  },
   aggregateRating: {
     '@type': 'AggregateRating',
     ratingValue: rating.value,
@@ -65,6 +80,21 @@ const schema = {
       }
     : {}),
 };
+
+/*
+  A second block rather than a nested property: FAQPage is its own type, and
+  Google reads the two independently. Every answer below is built from facts
+  already in business.js, so the markup cannot drift from the page.
+*/
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  })),
+};
 ---
 
 <!doctype html>
@@ -86,7 +116,12 @@ const schema = {
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL('/og-image.jpg', SITE_URL).href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`Devanture de ${business.name}, ${address.street} à ${address.city}`} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={new URL('/og-image.jpg', SITE_URL).href} />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
@@ -100,6 +135,7 @@ const schema = {
     </script>
 
     <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
   </head>
   <body>
     <a class="skip-link" href="#contenu">Aller au contenu</a>

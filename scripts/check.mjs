@@ -127,45 +127,99 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PAT
   await ctx.close();
 }
 
-/* ---------- map ---------- */
+/* ---------- map and consent ---------- */
 {
-  const ctx = await browser.newContext({ viewport: { width: 1000, height: 900 } });
+  const ctx = await browser.newContext({ viewport: { width: 1100, height: 900 } });
   const page = await ctx.newPage();
-  const adTrackers = [];
+  const google = [];
   page.on('request', (r) => {
-    if (/google-analytics|doubleclick|googletagmanager|maps\.google/.test(r.url())) {
-      adTrackers.push(r.url());
-    }
+    if (/google|gstatic|doubleclick/.test(r.url())) google.push(r.url());
   });
 
   await page.goto(BASE, { waitUntil: 'networkidle' });
   await page.waitForTimeout(500);
 
-  // OpenStreetMap can load with the page because it carries no advertising
-  // cookie. A Google embed creeping back in would silently oblige a consent
-  // banner, so its absence is asserted rather than assumed.
-  check(
-    'carte : aucun embed publicitaire',
-    adTrackers.length === 0,
-    adTrackers.slice(0, 2).join(', ')
-  );
+  // The whole point of the gate: Google is not contacted at all until the
+  // visitor agrees. A regression here is a legal problem, not a visual one.
+  check('consentement : aucune requête Google avant le clic', google.length === 0, google[0]?.slice(0, 50) ?? '');
+  check('consentement : le bandeau s’affiche', await page.isVisible('[data-consent]'));
+  check('carte : aucune iframe avant consentement', !(await page.$('[data-map] iframe')));
 
+  // The address must be readable while the map is not there.
+  const addressShown = await page.evaluate(() =>
+    (document.querySelector('[data-map]')?.textContent ?? '').includes('80 avenue')
+  );
+  check('carte : l’adresse reste lisible sans la carte', addressShown);
+
+  await page.click('[data-consent-accept]');
+  await page.waitForTimeout(800);
   const src = await page.getAttribute('[data-map] iframe', 'src');
   check(
-    'carte : embed OpenStreetMap présent au chargement',
-    !!src?.startsWith('https://www.openstreetmap.org/export/embed.html'),
-    src?.slice(0, 52)
+    'carte : l’acceptation charge l’embed Google',
+    !!src?.includes('output=embed') && !!src?.includes('Planet'),
+    src?.slice(0, 46)
   );
-  check('carte : un marqueur est posé', !!src?.includes('marker='));
+  check('consentement : le bandeau disparaît', !(await page.isVisible('[data-consent]')));
 
-  // Directions go through a text search, so they stay exact even while the
-  // stored coordinates are approximate.
+  // The choice must survive a reload, or the bar becomes an irritant.
+  await page.reload({ waitUntil: 'networkidle' });
+  await page.waitForTimeout(700);
+  check('consentement : le choix est mémorisé', !(await page.isVisible('[data-consent]')));
+  check('carte : rechargée directement après accord', !!(await page.$('[data-map] iframe')));
+
+  await ctx.close();
+}
+
+/* ---------- refusal keeps the page usable ---------- */
+{
+  const ctx = await browser.newContext({ viewport: { width: 1100, height: 900 } });
+  const page = await ctx.newPage();
+  await page.goto(BASE, { waitUntil: 'networkidle' });
+  await page.click('[data-consent-refuse]');
+  await page.waitForTimeout(500);
+
+  check('refus : aucune iframe chargée', !(await page.$('[data-map] iframe')));
   const link = await page.getAttribute('[data-map-fallback]', 'href');
   check(
-    'itinéraire : recherche par nom et adresse, pas par coordonnées',
-    !!link?.includes('query=Planet') && !link?.includes('@'),
-    link?.slice(0, 44)
+    'refus : le lien vers Google Maps reste disponible',
+    !!link?.startsWith('https://www.google.com/maps/'),
+    link?.slice(0, 40)
   );
+  await ctx.close();
+}
+
+/* ---------- SEO plumbing ---------- */
+{
+  const ctx = await browser.newContext();
+  const page = await ctx.newPage();
+
+  const robots = await page.goto(new URL('/robots.txt', BASE).href);
+  const robotsText = await robots.text();
+  check('robots.txt sert et déclare le sitemap', robotsText.includes('Sitemap:'), robotsText.split('\n').at(-2));
+
+  const sitemap = await page.goto(new URL('/sitemap.xml', BASE).href);
+  const sitemapText = await sitemap.text();
+  check('sitemap.xml valide et non vide', sitemapText.includes('<urlset') && sitemapText.includes('<loc>'));
+
+  await page.goto(BASE, { waitUntil: 'domcontentloaded' });
+
+  // The city has to be in the h1, not only in the title tag: it is the term
+  // the page has to win locally.
+  const h1 = await page.$eval('h1', (el) => el.textContent);
+  check('le h1 contient la ville', /Épinay-sur-Seine/.test(h1), h1.replace(/\s+/g, ' ').trim().slice(0, 60));
+
+  const og = await page.getAttribute('meta[property="og:image"]', 'content');
+  check('image de partage déclarée', !!og?.endsWith('/og-image.jpg'), og?.slice(-24));
+
+  // Two separate JSON-LD blocks: LocalBusiness and FAQPage.
+  const blocks = await page.$$eval('script[type="application/ld+json"]', (els) =>
+    els.map((e) => JSON.parse(e.textContent)['@type'])
+  );
+  check('balisage LocalBusiness + FAQPage', blocks.includes('AutoRepair') && blocks.includes('FAQPage'), blocks.join(', '));
+
+  const faqCount = await page.$$eval('#faq details', (els) => els.length);
+  check('la FAQ est rendue sur la page', faqCount >= 5, `${faqCount} questions`);
+
   await ctx.close();
 }
 

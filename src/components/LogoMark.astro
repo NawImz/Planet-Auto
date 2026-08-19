@@ -31,9 +31,13 @@ const { class: className = 'w-12', title } = Astro.props;
     rotating the whole svg would carry the ring round with it, which is not what
     a wheel does. transform-box: view-box makes the origin below resolve in
     viewBox units rather than the element's own bounding box.
+
+    data-logo-wheel carries an explicit empty value: a bare attribute is legal
+    HTML but not legal XML, and the SVG rasteriser used by the preview scripts
+    parses strictly, so it choked on it.
   -->
   <g
-    data-logo-wheel
+    data-logo-wheel=""
     fill="var(--logo-steel, #6f7b89)"
     fill-rule="evenodd"
     style="transform-origin: 840px 361px; transform-box: view-box"

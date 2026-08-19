@@ -10,35 +10,21 @@ const { address, hours } = business;
 const fullAddress = `${address.street}, ${address.postalCode} ${address.city}`;
 
 /*
-  OpenStreetMap, shown straight away.
+  Google Maps, at the client's request — it shows the business card, the photos
+  and the reviews inside the frame, which OpenStreetMap cannot.
 
-  It carries no advertising cookie, so it can load with the page without
-  obliging a consent banner — which a Google embed would. Its embed only
-  accepts a bounding box, so the pin is worth exactly what address.lat/lng are
-  worth; those now come off the shop's own Google listing.
+  The embed is addressed by name and address rather than by coordinates, so it
+  resolves the actual listing instead of dropping an anonymous pin. The stored
+  coordinates still feed the geo field of the structured data.
 
-  The route buttons still go through a name-and-address search rather than
-  those coordinates: it resolves the real listing in whichever map app the
-  visitor opens, which is a better handover than a bare point.
+  It loads only once the visitor has accepted: Google sets cookies the instant
+  the iframe enters the document. See CookieConsent.astro.
 */
 const query = encodeURIComponent(`${business.name}, ${fullAddress}`);
 const googleMaps = `https://www.google.com/maps/search/?api=1&query=${query}`;
 const waze = `https://waze.com/ul?q=${query}`;
 
-// About 410 m by 290 m — street level, close enough to pick out the building.
-// This tight a frame is only defensible now the coordinates are the real ones;
-// while they were estimated it had to stay wide enough to absorb the error.
-const dLon = 0.0028;
-const dLat = 0.0013;
-const bbox = [
-  address.lng - dLon,
-  address.lat - dLat,
-  address.lng + dLon,
-  address.lat + dLat,
-].join('%2C');
-const mapEmbed =
-  `https://www.openstreetmap.org/export/embed.html` +
-  `?bbox=${bbox}&layer=mapnik&marker=${address.lat}%2C${address.lng}`;
+const mapEmbed = `https://maps.google.com/maps?q=${query}&z=16&hl=fr&output=embed`;
 ---
 
 <section id="acces" class="scroll-mt-20 border-t border-rule bg-paper py-section">
@@ -103,6 +89,8 @@ const mapEmbed =
           <div
             class="relative h-[320px] overflow-hidden border border-rule bg-paper-deep lg:h-[400px]"
             data-map
+            data-map-src={mapEmbed}
+            data-map-title={`Carte : ${business.name}, ${fullAddress}`}
           >
             <div class="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center">
               <Icon name="pin" class="size-8 text-crimson" />
@@ -111,13 +99,7 @@ const mapEmbed =
                 <span class="mt-1 block text-[0.95rem] text-steel">{fullAddress}</span>
               </p>
             </div>
-            <iframe
-              src={mapEmbed}
-              title={`Carte : ${business.name}, ${fullAddress}`}
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              class="absolute inset-0 size-full border-0"
-            ></iframe>
+
           </div>
 
           {/* Outside the frame on purpose: whatever the embed does — loads,
@@ -133,7 +115,7 @@ const mapEmbed =
               Ouvrir dans Google Maps
             </a>
             <p class="text-sm text-steel-light">
-              Fond de carte OpenStreetMap, sans traceur publicitaire.
+              Carte Google. Aucun autre service tiers sur ce site.
             </p>
           </div>
         </div>

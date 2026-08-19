@@ -163,6 +163,7 @@ const { class: className = 'w-12', title } = Astro.props;
 ---
 
 <svg
+  data-logo-mark
   class={className}
   viewBox="${vb.join(' ')}"
   fill="none"

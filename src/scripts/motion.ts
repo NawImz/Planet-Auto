@@ -11,6 +11,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 export function initMotion() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
+  drawMark();
   drawBands();
   revealHeroPhoto();
   parallaxPhotos();
@@ -20,28 +21,66 @@ export function initMotion() {
 }
 
 /* ------------------------------------------------------------------ *
- * The mark does not turn — and cannot
+ * The mark is drawn on, and it does not turn
  *
- * There was a hover spin here: the spiral is a wheel, so it turned inside its
- * fixed orbit. It had to go, and not because of a bug in the animation.
+ * Why not a spin: the mark is vectorised from a flat photograph of the sign,
+ * one trace per colour. Where the crimson orbit crosses the wheel the sign
+ * shows crimson, so the grey trace has that band missing — it was never drawn
+ * underneath. At rest the orbit covers the gap exactly and the wheel reads as
+ * whole; rotate the wheel and the gap travels out from under the orbit and
+ * opens a hole through the spokes. A rotational-symmetry repair does not help
+ * either: the blades repeat at no whole fraction of a turn, so unioning
+ * rotated copies fills the wheel into a solid disc.
  *
- * The mark is vectorised from a flat picture of the shopfront sign, one trace
- * per colour. Where the crimson orbit crosses the wheel, the sign shows
- * crimson — so the grey trace has that band missing from it. It was never
- * drawn underneath; there is nothing there to draw. At rest the orbit sits
- * exactly over the gap and the wheel reads as whole. Rotate the wheel by any
- * visible amount and the gap travels out from under the orbit and opens as a
- * hole through the spokes.
+ * So the two layers may never move relative to each other. Everything below
+ * transforms the whole <svg>, which keeps them locked together.
  *
- * No pivot fixes that, and neither does a rotational-symmetry repair: the
- * blades do not repeat at 3, 4, 5 or 6 fold, so unioning rotated copies fills
- * the wheel into a solid disc.
+ * The gesture is the one the rest of the page already uses: a wipe from the
+ * left, the same as the crimson bands and the hero photograph. It suits this
+ * mark better than a spin ever did — the orbit is an ellipse sweeping left to
+ * right, so the wipe reads as the orbit being drawn in one stroke.
  *
- * The spin comes back the day the garage can supply the original vector file
- * from whoever made the sign — the wheel would then be a complete shape with
- * the orbit as a separate layer. data-logo-wheel already carries the hub in
- * viewBox units for that.
+ * The hover pulse is a single press-and-release, short enough to read as a
+ * response to the pointer rather than as an animation. It ends on scale 1, so
+ * an interrupted tween cannot leave the mark stuck large.
  * ------------------------------------------------------------------ */
+function drawMark() {
+  gsap.utils.toArray<SVGSVGElement>('[data-logo-mark]').forEach((mark) => {
+    // The header mark is above the fold and plays on load; the footer copy
+    // waits for its scroll trigger, or it would play where nobody is looking.
+    const inHeader = !!mark.closest('[data-header]');
+
+    gsap.fromTo(
+      mark,
+      { clipPath: 'inset(0 100% 0 0)', scale: 0.94 },
+      {
+        clipPath: 'inset(0 0% 0 0)',
+        scale: 1,
+        duration: 0.9,
+        ease: 'power3.out',
+        ...(inHeader
+          ? { delay: 0.1 }
+          : { scrollTrigger: { trigger: mark, start: 'top 92%', once: true } }),
+      }
+    );
+
+    const trigger = mark.closest('a');
+    if (!trigger) return;
+
+    let pulse: gsap.core.Tween | null = null;
+    trigger.addEventListener('mouseenter', () => {
+      // Killing the previous one rather than queueing: on a touch device the
+      // tap fires this, and a queue would make the mark bounce for a second
+      // after the finger has gone.
+      pulse?.kill();
+      pulse = gsap.fromTo(
+        mark,
+        { scale: 1 },
+        { scale: 1.08, duration: 0.17, ease: 'power2.out', yoyo: true, repeat: 1 }
+      );
+    });
+  });
+}
 
 /* ------------------------------------------------------------------ *
  * The crimson band gets painted

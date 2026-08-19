@@ -52,10 +52,25 @@ const scrollTo = (page, y) =>
   check('la roue revient droite', Math.abs(settled) <= 1, `${settled}°`);
 
   // Hover drives a half turn.
+  const centre = () =>
+    page.evaluate(() => {
+      const r = document.querySelector('[data-header] [data-logo-wheel]').getBoundingClientRect();
+      return [r.x + r.width / 2, r.y + r.height / 2];
+    });
+
+  const before = await centre();
   await page.hover('[data-header] a[href="#top"]');
   await page.waitForTimeout(1100);
   const hovered = await rot('[data-header] [data-logo-wheel]');
   check('la roue repart au survol', Math.abs(hovered) > 100, `${hovered}°`);
+
+  // Régression : la roue tournait autour d'un point situé une largeur de
+  // bbox trop loin, ce qui la sortait du cadre où elle était rognée — sur
+  // mobile, où le tap déclenche mouseenter, elle semblait disparaître. Une
+  // rotation autour de son moyeu laisse son centre où il est.
+  const after = await centre();
+  const drift = Math.hypot(after[0] - before[0], after[1] - before[1]);
+  check('la roue tourne sur elle-même, sans dériver', drift < 3, `${drift.toFixed(1)}px`);
   await ctx.close();
 }
 

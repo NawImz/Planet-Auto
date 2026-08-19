@@ -173,18 +173,21 @@ const { class: className = 'w-12', title } = Astro.props;
   <!--
     The spiral is its own group so it can be spun independently of the orbit —
     rotating the whole svg would carry the ring round with it, which is not what
-    a wheel does. transform-box: view-box makes the origin below resolve in
-    viewBox units rather than the element's own bounding box.
+    a wheel does.
 
-    data-logo-wheel carries an explicit empty value: a bare attribute is legal
-    HTML but not legal XML, and the SVG rasteriser used by the preview scripts
-    parses strictly, so it choked on it.
+    data-logo-wheel carries the hub, in viewBox units, and motion.ts hands it
+    to GSAP as svgOrigin. It used to be a CSS transform-origin paired with
+    transform-box: view-box, which is correct CSS and wrong here: GSAP writes
+    its own transform attribute and resolves transform-origin against the
+    element's bounding box, ignoring transform-box. It therefore spun the
+    spiral around (bbox.x + ${wheelCx}, bbox.y + ${wheelCy}) — far outside the viewBox — and a
+    tap on the logo flung the wheel out of the frame, where it was clipped and
+    looked deleted. svgOrigin is user-space and unambiguous.
   -->
   <g
-    data-logo-wheel=""
+    data-logo-wheel="${wheelCx} ${wheelCy}"
     fill="var(--logo-steel, #6f7b89)"
     fill-rule="evenodd"
-    style="transform-origin: ${wheelCx}px ${wheelCy}px; transform-box: view-box"
   >
 ${grey.paths.map((d) => `    <path d="${d}" />`).join('\n')}
   </g>

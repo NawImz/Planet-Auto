@@ -44,9 +44,11 @@ const waze = `https://waze.com/ul?q=${query}`;
           {address.street}<br />
           {address.postalCode} {address.city}
         </address>
+        {/* Deux rues repères, et rien sur le stationnement : le site n'en
+            parle plus du tout. Ce qui est écrit ici est ce qu'un conducteur
+            cherche pour ne pas dépasser l'atelier. */}
         <p class="mt-2 text-steel" data-reveal>
-          Sur l'avenue, entre la rue Ampère et la rue Branly. Stationnement de
-          rue devant l'atelier.
+          Sur l'avenue, entre la rue Ampère et la rue Branly.
         </p>
 
         <div class="mt-6 flex flex-wrap gap-3" data-reveal>
@@ -130,7 +132,7 @@ const waze = `https://waze.com/ul?q=${query}`;
         <div class="relative overflow-hidden" data-reveal data-parallax>
           <Image
             src={rue}
-            alt="L'avenue de la République devant le garage, avec la piste cyclable et le stationnement"
+            alt="L'avenue de la République devant le garage, avec la piste cyclable et la devanture de l'atelier au fond"
             widths={[640, 1024, 1360]}
             sizes="(min-width: 1024px) 560px, 100vw"
             loading="lazy"

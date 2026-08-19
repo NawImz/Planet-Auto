@@ -53,17 +53,19 @@ cette phrase et trouve une marche a fait le trajet pour rien. Elle a donc été
 ramenée à ce que la photo montre : « entrée de plain-pied, au niveau du
 trottoir ».
 
-Puis la suppression, à votre demande : **plus aucune mention d'accessibilité ni
-de moyen de paiement** sur le site. Les deux questions correspondantes ont
-disparu de la FAQ, la bande de « faits pratiques » de la section avis a été
-retirée, et `paymentAccepted` / `currenciesAccepted` ne sont plus déclarés dans
-le balisage schema.org. C'est le choix le plus sûr : ces deux sujets se règlent
-au téléphone, où la réponse peut être précise et datée du jour.
+Puis la suppression, à votre demande : **plus aucune mention d'accessibilité,
+de moyen de paiement ni de stationnement** sur le site. Les deux questions
+correspondantes ont disparu de la FAQ, la bande de « faits pratiques » de la
+section avis a été retirée, et `paymentAccepted` / `currenciesAccepted` ne sont
+plus déclarés dans le balisage schema.org. C'est le choix le plus sûr : ces
+sujets se règlent au téléphone, où la réponse peut être précise et datée du
+jour.
 
-Le « parking » a disparu au passage : le stationnement devant l'atelier est du
-**stationnement de rue**, pas un parking appartenant au garage. La section
-accès le dit maintenant en ces termes — c'est la seule mention qui subsiste, et
-elle est exacte.
+Le stationnement est parti dans le même mouvement. Il avait déjà été corrigé
+une première fois — « parking » laissait entendre un parking appartenant au
+garage, alors qu'il s'agit de stationnement de rue — puis retiré entièrement.
+La section accès ne donne plus que deux rues repères, Ampère et Branly, qui
+servent à ne pas dépasser l'atelier sans rien promettre.
 
 ### Les quatre « engagements » de la section avis → quatre observations sourcées
 
@@ -113,7 +115,7 @@ huit dont deux sont meublées.
 | Question | Statut |
 |---|---|
 | Horaires | ✅ samedi corrigé à 17h30 |
-| Adresse et stationnement | ✅ « stationnement de rue », plus « parking » |
+| Adresse | ✅ deux rues repères, plus aucune mention de stationnement |
 | Pièces aux particuliers | ✅ enseigne |
 | Réparations à l'atelier | ✅ géométrie retirée |
 | Pièces moins chères que l'origine | ✅ texte du client |

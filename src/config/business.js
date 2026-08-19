@@ -59,9 +59,10 @@ export const business = {
 
     - `paymentAccepted` / `currenciesAccepted` — moyens de paiement. Le site
       n'en annonce plus aucun : c'est au comptoir de le dire.
-    - `access` — l'entrée de plain-pied. Même après réécriture en fait
-      observable, la mention est retirée ; l'accessibilité se demande au
-      téléphone, où la réponse peut être précise.
+    - `access` — l'entrée de plain-pied et le stationnement. Même après
+      réécriture en faits observables, les deux mentions sont retirées ;
+      l'accessibilité et le stationnement se demandent au téléphone, où la
+      réponse peut être précise et datée du jour.
     - `priceRange` — la fourchette « €€ » était une déduction, et une
       fourchette inventée dans le balisage est une donnée que Google affiche
       telle quelle.
@@ -212,7 +213,7 @@ export const faq = [
   },
   {
     q: 'Où se trouve le garage à Épinay-sur-Seine ?',
-    a: "Au 80 avenue de la République, 93800 Épinay-sur-Seine, sur l'avenue entre la rue Ampère et la rue Branly. On stationne dans la rue devant l'atelier.",
+    a: "Au 80 avenue de la République, 93800 Épinay-sur-Seine, sur l'avenue entre la rue Ampère et la rue Branly.",
   },
   {
     q: 'Vendez-vous des pièces détachées aux particuliers ?',

@@ -27,19 +27,32 @@ export function initMotion() {
  * spinning inside a fixed orbit is the thing the logo draws. One settling
  * rotation on load, then a half-turn on hover — no idle loop, which would
  * pull the eye away from the copy and keep a compositor layer awake.
+ *
+ * The hub comes from the markup as svgOrigin, in viewBox units. It has to be
+ * svgOrigin and not transformOrigin: GSAP resolves transformOrigin against the
+ * element's own bounding box and takes no notice of transform-box: view-box,
+ * so the CSS origin this used to rely on placed the pivot a whole bbox-width
+ * off. The spiral swung out of the frame and stayed there — on a touch device,
+ * where the tap fires mouseenter, that read as the wheel vanishing on tap.
  * ------------------------------------------------------------------ */
 function spinWheel() {
   const header = document.querySelector('[data-header]');
   const wheel = header?.querySelector<SVGGElement>('[data-logo-wheel]');
   if (!wheel) return;
 
-  gsap.from(wheel, { rotation: -150, duration: 1.15, ease: 'power3.out' });
+  // "840 361" — written by scripts/trace-logo.mjs, which knows where the hub
+  // is. Falling back to the bbox centre keeps the mark spinning about
+  // something sane if the attribute is ever emptied.
+  const svgOrigin = wheel.dataset.logoWheel?.trim() || undefined;
+  const spin = { svgOrigin, ease: 'power3.out' };
+
+  gsap.from(wheel, { ...spin, rotation: -150, duration: 1.15 });
 
   const trigger = wheel.closest('a');
   let turns = 0;
   trigger?.addEventListener('mouseenter', () => {
     turns += 180;
-    gsap.to(wheel, { rotation: turns, duration: 0.9, ease: 'power2.out' });
+    gsap.to(wheel, { ...spin, rotation: turns, duration: 0.9, ease: 'power2.out' });
   });
 }
 

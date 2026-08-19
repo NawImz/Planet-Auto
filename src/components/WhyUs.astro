@@ -1,8 +1,7 @@
 ---
 import { Image } from 'astro:assets';
-import { benefits, business } from '../config/business.js';
+import { benefits } from '../config/business.js';
 import boutique from '../assets/boutique-interieur.jpeg';
-import Icon from './Icon.astro';
 ---
 
 {/*
@@ -50,20 +49,10 @@ import Icon from './Icon.astro';
           ))}
         </dl>
 
-        {/* Deux faits vérifiables, et rien d'autre : l'atelier ouvre au
-            niveau du trottoir (visible sur la devanture) et le comptoir prend
-            la carte. La mention « accessible PMR » qui figurait ici engageait
-            une conformité que personne n'a vérifiée. */}
-        <div class="mt-8 flex flex-wrap gap-x-8 gap-y-3" data-reveal>
-          <p class="flex items-center gap-2.5 text-[0.95rem] text-ink-soft">
-            <Icon name="accessibility" class="size-5 shrink-0 text-crimson" />
-            Entrée de plain-pied, au niveau du trottoir
-          </p>
-          <p class="flex items-center gap-2.5 text-[0.95rem] text-ink-soft">
-            <Icon name="card" class="size-5 shrink-0 text-crimson" />
-            {business.paymentAccepted.join(' · ')}
-          </p>
-        </div>
+        {/* La bande de deux « faits pratiques » qui fermait cette colonne
+            portait les moyens de paiement et l'entrée de plain-pied. Les deux
+            sont retirés du site, et rien ne les remplace : la colonne se
+            termine sur les avis, ce qui est le sujet de la section. */}
       </div>
     </div>
   </div>

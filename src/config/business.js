@@ -53,37 +53,22 @@ export const business = {
     { day: 'Dimanche', dayCode: 'Su', ranges: [] },
   ],
 
-  /**
-   * Confirmé par le client. « Espèces » figurait ici sans l'être : ajouté par
-   * déduction, pas transmis. Un client qui se présente avec du liquide sur la
-   * foi du site et se voit refuser, c'est une promesse rompue — retiré.
-   */
-  paymentAccepted: ['Carte bancaire', 'Sans contact'],
-  currenciesAccepted: 'EUR',
-
   /*
-    priceRange a été retiré : la fourchette « €€ » était une déduction, et une
-    fourchette de prix inventée dans le balisage est une donnée que Google
-    affiche telle quelle. Rien de mieux qu'une valeur fausse ici : pas de
-    valeur du tout.
-  */
+    Trois champs ont été retirés à la demande du client, et il n'y a rien à
+    remettre à leur place :
 
-  /**
-   * Ce que la photo de la devanture montre, et rien de plus : le rideau de
-   * l'atelier arrive au niveau du trottoir, sans marche. C'est un fait
-   * observable.
-   *
-   * L'ancienne formulation — « parking et entrée accessibles PMR » — n'était
-   * observable nulle part. « Accessible PMR » est un terme réglementaire
-   * (largeur de passage, cheminement, place réservée) : l'écrire engage le
-   * garage, et le stationnement devant l'atelier est du stationnement de rue,
-   * pas une place réservée. Voir docs/VERACITE.md.
-   */
-  access: {
-    stepFree: true,
-    /** Stationnement sur l'avenue, pas de parking privatif. */
-    streetParking: true,
-  },
+    - `paymentAccepted` / `currenciesAccepted` — moyens de paiement. Le site
+      n'en annonce plus aucun : c'est au comptoir de le dire.
+    - `access` — l'entrée de plain-pied. Même après réécriture en fait
+      observable, la mention est retirée ; l'accessibilité se demande au
+      téléphone, où la réponse peut être précise.
+    - `priceRange` — la fourchette « €€ » était une déduction, et une
+      fourchette inventée dans le balisage est une donnée que Google affiche
+      telle quelle.
+
+    Aucun de ces champs ne doit être « redéduit » : leur absence est un choix,
+    pas un oubli.
+  */
 
   social: [
     { href: 'https://www.facebook.com/planetautoepinay', label: 'Facebook' },
@@ -245,14 +230,11 @@ export const faq = [
     q: 'Fournissez-vous des pièces pour poids lourds ou engins agricoles ?',
     a: "Oui. Le stock couvre les véhicules légers, les poids lourds, les engins de travaux publics, le matériel agricole et la marine. Le comptoir fournit également des équipements de garage et de l'outillage professionnel.",
   },
-  {
-    q: 'Quels moyens de paiement acceptez-vous ?',
-    a: 'Carte bancaire et paiement sans contact.',
-  },
-  {
-    q: "L'entrée est-elle de plain-pied ?",
-    a: "Oui, l'atelier ouvre directement sur le trottoir, sans marche, et on stationne sur l'avenue devant. Pour un besoin d'accessibilité particulier, un appel au 01 49 98 14 20 vaut mieux qu'une réponse générale : on vous dit précisément ce qu'il en est le jour de votre venue.",
-  },
+  /*
+    Les deux questions « moyens de paiement » et « entrée de plain-pied » ont
+    été retirées avec le reste. Elles ne sont pas remplacées : une FAQ de six
+    questions vraies vaut mieux que huit dont deux sont meublées.
+  */
 ];
 
 /**

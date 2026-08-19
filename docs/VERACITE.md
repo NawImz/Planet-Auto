@@ -4,8 +4,9 @@ Vous avez posé deux fois la même question : « toutes les infos du site sont
 vraies ? ». La réponse honnête, la première fois, était **non**. Ce document
 disait lesquelles ne l'étaient pas.
 
-Depuis, tout ce qui pouvait être corrigé sans vous l'a été. Ce qui reste tient
-en **cinq questions**, en bas de page, et chacune se règle par oui ou par non.
+Depuis, tout ce qui pouvait être corrigé sans vous l'a été, et ce qui ne
+pouvait pas l'être a été retiré du site. Ce qui reste tient en **quatre
+questions**, en bas de page, et chacune se règle par oui ou par non.
 
 Trois statuts :
 
@@ -34,30 +35,35 @@ Trois statuts :
 | Pièces origine / équivalente / réemploi | Idem |
 | Équipements de garage et outillage | Idem |
 | Réparation de l'électronique embarquée | Idem |
-| Carte bancaire, sans contact | Brief |
-| Entrée de plain-pied, au niveau du trottoir | Visible sur la photo de la devanture : le rideau de l'atelier arrive au niveau du trottoir |
 | Page Facebook | Transmise par vous |
 
 ---
 
 ## Ce qui a été retiré ou réécrit
 
-### « Parking et entrée accessibles PMR » → « Entrée de plain-pied, au niveau du trottoir »
+### Accessibilité et moyens de paiement — supprimés du site
 
-C'était la phrase la plus risquée du site. « Accessible PMR » est un terme
-**réglementaire** — largeur de passage, cheminement, place réservée — et
-personne n'avait vérifié un seul de ces points. Une personne en fauteuil qui se
-déplace sur la foi de cette phrase et trouve une marche a fait le trajet pour
-rien.
+En deux temps.
 
-Le site n'affirme plus que ce que la photo montre. La question de la FAQ a été
-réécrite dans le même esprit : elle décrit le seuil, puis renvoie au téléphone
-pour un besoin d'accessibilité précis — ce qui est plus utile qu'un « oui »
-générique, et engageant pour personne.
+D'abord la réécriture : « Parking et entrée accessibles PMR » était la phrase
+la plus risquée du site. « Accessible PMR » est un terme **réglementaire** —
+largeur de passage, cheminement, place réservée — et personne n'avait vérifié
+un seul de ces points. Une personne en fauteuil qui se déplace sur la foi de
+cette phrase et trouve une marche a fait le trajet pour rien. Elle a donc été
+ramenée à ce que la photo montre : « entrée de plain-pied, au niveau du
+trottoir ».
 
-Le « parking » a disparu aussi : le stationnement devant l'atelier est du
-**stationnement de rue**, pas un parking appartenant au garage. Le site le dit
-maintenant en ces termes.
+Puis la suppression, à votre demande : **plus aucune mention d'accessibilité ni
+de moyen de paiement** sur le site. Les deux questions correspondantes ont
+disparu de la FAQ, la bande de « faits pratiques » de la section avis a été
+retirée, et `paymentAccepted` / `currenciesAccepted` ne sont plus déclarés dans
+le balisage schema.org. C'est le choix le plus sûr : ces deux sujets se règlent
+au téléphone, où la réponse peut être précise et datée du jour.
+
+Le « parking » a disparu au passage : le stationnement devant l'atelier est du
+**stationnement de rue**, pas un parking appartenant au garage. La section
+accès le dit maintenant en ces termes — c'est la seule mention qui subsiste, et
+elle est exacte.
 
 ### Les quatre « engagements » de la section avis → quatre observations sourcées
 
@@ -91,7 +97,7 @@ client ne peut plus arriver au comptoir en disant « votre site dit que… ».
 
 | Élément | Statut |
 |---|---|
-| « Espèces » comme moyen de paiement | ❌ inventé — retiré du site et de la FAQ |
+| « Espèces » comme moyen de paiement | ❌ inventé — puis toute la mention des paiements a été retirée |
 | Zone desservie : Saint-Denis, Villetaneuse, L'Île-Saint-Denis | ❌ communes choisies sur une carte — réduit à Épinay-sur-Seine |
 | Fourchette de prix « €€ » dans le balisage | ❌ déduit — le champ a été supprimé plutôt que deviné |
 | Horaires du samedi | 9h–18h → **9h–17h30**, d'après votre capture ; la ligne du bloc contact, qui était écrite en dur, est maintenant calculée depuis le tableau des horaires et ne peut plus le contredire |
@@ -100,7 +106,9 @@ client ne peut plus arriver au comptoir en disant « votre site dit que… ».
 
 ## La FAQ
 
-Les huit réponses ne s'appuient plus que sur des faits confirmés.
+Six questions, toutes appuyées sur des faits confirmés. Les deux autres ont été
+supprimées et **ne sont pas remplacées** : six questions vraies valent mieux que
+huit dont deux sont meublées.
 
 | Question | Statut |
 |---|---|
@@ -110,28 +118,25 @@ Les huit réponses ne s'appuient plus que sur des faits confirmés.
 | Réparations à l'atelier | ✅ géométrie retirée |
 | Pièces moins chères que l'origine | ✅ texte du client |
 | Poids lourds et agricole | ✅ texte du client |
-| Moyens de paiement | ✅ sans « espèces » |
-| Entrée de plain-pied | ✅ réécrite, renvoie au téléphone pour un besoin précis |
+| ~~Moyens de paiement~~ | supprimée |
+| ~~Entrée de plain-pied~~ | supprimée |
 
 ---
 
-## ⚠️ Ce qui reste — cinq questions
+## ⚠️ Ce qui reste — quatre questions
 
 1. **Le samedi ferme bien à 17h30 ?** Vous m'aviez d'abord écrit 18h, puis
    envoyé une capture indiquant 17h30. J'ai gardé 17h30, la plus récente. Une
    erreur de trente minutes envoie quelqu'un devant un rideau fermé.
 
-2. **L'entrée : y a-t-il une marche, oui ou non ?** La photo dit non, mais
-   c'est une photo prise de l'autre côté de la rue.
-
-3. **Faites-vous la géométrie ?** Si vous avez le banc, je la remets — c'est un
+2. **Faites-vous la géométrie ?** Si vous avez le banc, je la remets — c'est un
    argument fort et peu de garages de quartier l'affichent.
 
-4. **Les pneus : toutes marques, ou une sélection ?** Un mot suffit.
+3. **Les pneus : toutes marques, ou une sélection ?** Un mot suffit.
 
 Et une information que je n'ai pas pu vérifier moi-même :
 
-5. **Alternative Autoparts.** Vous m'aviez transmis ce nom de réseau de
+4. **Alternative Autoparts.** Vous m'aviez transmis ce nom de réseau de
    distribution. Il n'apparaît nulle part sur le site pour l'instant : je ne
    sais pas s'il s'agit d'une adhésion à afficher (c'est un argument de
    sérieux) ou d'un simple fournisseur. Dites-moi lequel.

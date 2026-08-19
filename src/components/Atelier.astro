@@ -1,0 +1,131 @@
+---
+import { Image } from 'astro:assets';
+
+import porsche from '../assets/atelier-porsche.jpg';
+import freinage from '../assets/atelier-freinage.jpg';
+import distribution from '../assets/atelier-distribution.jpg';
+import huiles from '../assets/magasin-huiles.jpg';
+import batteries from '../assets/magasin-batteries.jpg';
+import outillage from '../assets/magasin-outillage.jpg';
+import degivrant from '../assets/magasin-degivrant.jpg';
+
+/*
+  Photographs taken at the garage, supplied by the client.
+
+  They sit here, straight after the section that claims two trades under one
+  roof, because that claim is the one thing on the page a visitor cannot check
+  from the street. A shopfront photograph proves an address; a caliper off the
+  hub and a shelf of priced oil prove the trades.
+
+  Captions describe what is in the frame and nothing more. "Un Cayenne sur le
+  pont" is visible; "on prend tous les véhicules" would not be.
+*/
+const atelier = [
+  {
+    src: porsche,
+    caption: 'Un Porsche Cayenne sur le pont de l’atelier.',
+    alt: "Un Porsche Cayenne gris levé sur le pont ciseaux de l'atelier, une bâche Fuchs accrochée au mur et l'outillage au sol",
+    lead: true,
+  },
+  {
+    src: freinage,
+    caption: 'Étrier avant déposé, disque à nu.',
+    alt: "Deux personnes déposent un étrier de frein rouge d'une roue avant, le disque et le moyeu à nu",
+  },
+  {
+    src: distribution,
+    caption: 'Haut moteur ouvert, pignons de distribution accessibles.',
+    alt: 'Un moteur ouvert, carters de distribution retirés, les pignons des arbres à cames et la courroie accessibles',
+  },
+];
+
+const comptoir = [
+  {
+    src: huiles,
+    caption: 'Le rayon huiles, prix affichés au bidon.',
+    alt: "Le rayon des huiles moteur du magasin : bidons de 5 litres en 10w40, 5w40 et 5w30, avec les étiquettes de prix Planet Auto",
+  },
+  {
+    src: batteries,
+    caption: 'Des batteries en rayon.',
+    alt: 'Des batteries de démarrage 12 volts empilées sur plusieurs rangées dans le magasin',
+  },
+  {
+    src: outillage,
+    caption: 'Coffrets d’outillage au comptoir.',
+    alt: "Un coffret de douilles et d'embouts ouvert sur le comptoir, avec l'étiquette et le numéro de téléphone de Planet Auto",
+  },
+  {
+    src: degivrant,
+    caption: 'Les consommables de saison.',
+    alt: 'Des flacons de dégivrant pour pare-brise à 5 euros dans le rayon accessoires',
+  },
+];
+---
+
+<section id="atelier" class="scroll-mt-20 border-t border-rule bg-paper py-section">
+  <div class="mx-auto max-w-6xl px-5 lg:px-8">
+    <div class="max-w-2xl">
+      <span class="band" data-reveal></span>
+      <h2 class="mt-5 font-display text-[clamp(1.9rem,4.5vw,2.9rem)] font-extrabold" data-reveal>
+        Sur le pont,<br />et derrière le comptoir
+      </h2>
+      <p class="mt-4 text-lg text-steel" data-reveal>
+        Des photos prises ici. C'est la seule chose qu'on ne peut pas vérifier
+        depuis le trottoir.
+      </p>
+    </div>
+
+    <h3 class="label mt-12 border-t border-rule pt-8 text-ink" data-reveal>À l'atelier</h3>
+
+    {/* Asymétrique : la photo de tête tient toute la hauteur de la colonne, les
+        deux autres se partagent celle d'en face. Trois vignettes de même taille
+        auraient donné une planche-contact, pas une mise en page.
+
+        La légende est hors du cadre rogné : posée à l'intérieur, le
+        overflow-hidden qui recadre la photo la coupait aussi. */}
+    <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-[1.15fr_1fr] lg:gap-5" data-stagger>
+      {atelier.map((photo) => (
+        <figure class:list={['flex flex-col', photo.lead && 'sm:row-span-2']} data-reveal>
+          <div class:list={['relative overflow-hidden', photo.lead && 'sm:min-h-0 sm:flex-1']}>
+            <Image
+              src={photo.src}
+              alt={photo.alt}
+              widths={[420, 640, 900]}
+              sizes="(min-width: 1024px) 480px, (min-width: 640px) 45vw, 100vw"
+              loading="lazy"
+              class:list={[
+                'w-full object-cover',
+                photo.lead ? 'aspect-[3/4] sm:h-full sm:aspect-auto' : 'aspect-[4/3]',
+              ]}
+            />
+            {photo.lead && (
+              <span class="absolute inset-x-0 bottom-0 h-1.5 bg-crimson" aria-hidden="true"></span>
+            )}
+          </div>
+          <figcaption class="mt-2 text-[0.9rem] text-steel">{photo.caption}</figcaption>
+        </figure>
+      ))}
+    </div>
+
+    <h3 class="label mt-14 border-t border-rule pt-8 text-ink" data-reveal>Au comptoir</h3>
+
+    {/* Quatre de front, en revanche : ce sont des vues de rayon, et une planche
+        est exactement la bonne forme pour montrer ce qu'il y a en stock. */}
+    <div class="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5" data-stagger>
+      {comptoir.map((photo) => (
+        <figure data-reveal>
+          <Image
+            src={photo.src}
+            alt={photo.alt}
+            widths={[300, 440, 640]}
+            sizes="(min-width: 1024px) 270px, 45vw"
+            loading="lazy"
+            class="aspect-[4/5] w-full object-cover"
+          />
+          <figcaption class="mt-2 text-[0.9rem] text-steel">{photo.caption}</figcaption>
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>

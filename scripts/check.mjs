@@ -185,6 +185,48 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PAT
   await ctx.close();
 }
 
+/* ---------- workshop photographs ---------- */
+{
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  const page = await ctx.newPage();
+  await page.goto(BASE, { waitUntil: 'networkidle' });
+
+  await page.evaluate(() => document.querySelector('#atelier')?.scrollIntoView());
+  await page.waitForTimeout(1400);
+
+  const gallery = await page.evaluate(() =>
+    [...document.querySelectorAll('#atelier figure')].map((fig) => {
+      const img = fig.querySelector('img');
+      return {
+        drawn: !!img && img.naturalWidth > 0,
+        alt: (img?.getAttribute('alt') ?? '').trim(),
+        caption: (fig.querySelector('figcaption')?.textContent ?? '').trim(),
+      };
+    })
+  );
+
+  check('galerie : sept photos du garage', gallery.length === 7, `${gallery.length} figure(s)`);
+  check(
+    'galerie : toutes les photos sont rendues',
+    gallery.every((g) => g.drawn),
+    `${gallery.filter((g) => !g.drawn).length} non rendue(s)`
+  );
+  // Une photo d'atelier sans alternative textuelle ne dit rien à qui ne la
+  // voit pas, et rien non plus à Google Images.
+  check(
+    'galerie : chaque photo décrite pour les lecteurs d’écran',
+    gallery.every((g) => g.alt.length > 25),
+    gallery.find((g) => g.alt.length <= 25)?.alt ?? ''
+  );
+  check(
+    'galerie : chaque photo porte sa légende',
+    gallery.every((g) => g.caption.length > 5),
+    `${gallery.filter((g) => g.caption.length <= 5).length} sans légende`
+  );
+
+  await ctx.close();
+}
+
 /* ---------- SEO plumbing ---------- */
 {
   const ctx = await browser.newContext();

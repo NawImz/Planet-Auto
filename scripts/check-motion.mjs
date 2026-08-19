@@ -199,6 +199,15 @@ const scrollTo = (page, y) =>
 
   // The road markings are scrubbed, so their position has to differ between
   // two scroll offsets — and the strip has to stay drawn at both.
+  // Les repères sont pris par rapport à la bande elle-même, pas à des offsets
+  // en dur : la page s'allonge à chaque section ajoutée, et deux positions
+  // fixes finissent par tomber toutes les deux avant l'entrée en scène.
+  const span = await page.evaluate(() => {
+    const road = document.querySelector('[data-road]');
+    const top = road.getBoundingClientRect().top + window.scrollY;
+    return { start: top - window.innerHeight, end: top + road.offsetHeight };
+  });
+
   const roadAt = async (y) => {
     await scrollTo(page, y);
     await page.waitForTimeout(700);
@@ -209,8 +218,9 @@ const scrollTo = (page, y) =>
     });
   };
 
-  const near = await roadAt(1400);
-  const far = await roadAt(4200);
+  const travel = span.end - span.start;
+  const near = await roadAt(span.start + travel * 0.15);
+  const far = await roadAt(span.start + travel * 0.85);
   check('le marquage au sol défile', near.x !== far.x, `${near.x} → ${far.x}`);
   check('le marquage reste dessiné', near.image && far.image);
   await ctx.close();

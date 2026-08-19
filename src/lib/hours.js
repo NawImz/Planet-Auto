@@ -52,3 +52,35 @@ export function isOpenAt(hours, date) {
     return minutes >= oh * 60 + om && minutes < ch * 60 + cm;
   });
 }
+
+/**
+ * The one-line summary used in running text and in the FAQ.
+ *
+ * Built from the table rather than typed out: the version that was hardcoded
+ * in the contact block kept a Saturday closing time the table no longer had,
+ * so the page contradicted itself two screens apart.
+ *
+ * Consecutive days sharing the same ranges collapse into "Lun–Ven"; a single
+ * day keeps its own short name.
+ */
+export function summariseHours(hours) {
+  const short = { Lundi: 'Lun', Mardi: 'Mar', Mercredi: 'Mer', Jeudi: 'Jeu', Vendredi: 'Ven', Samedi: 'Sam', Dimanche: 'Dim' };
+  const groups = [];
+
+  for (const day of hours) {
+    const key = JSON.stringify(day.ranges);
+    const last = groups.at(-1);
+    if (last && last.key === key) last.days.push(day.day);
+    else groups.push({ key, days: [day.day], ranges: day.ranges });
+  }
+
+  return groups
+    .map(({ days, ranges }) => {
+      const label =
+        days.length === 1
+          ? short[days[0]]
+          : `${short[days[0]]}–${short[days.at(-1)]}`;
+      return `${label} ${ranges.length ? formatRanges(ranges) : 'fermé'}`;
+    })
+    .join('  |  ');
+}

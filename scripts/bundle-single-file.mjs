@@ -103,40 +103,14 @@ if (icoRef) {
 /* ---------- map ---------- */
 
 /*
-  Neutralise the map in the preview.
+  Nothing to do any more, and that is the point.
 
-  A sandboxed host refuses the embed and paints its own opaque "content
-  blocked" notice inside the frame, which reads as a broken site. The frame
-  cannot be talked out of that from the parent document, and the refusal is not
-  detectable from script either.
-
-  The embed is no longer written into the HTML — it is created by consent.ts
-  from data-map-src — so removing that one attribute is what stops it: the
-  loader finds no source and does nothing. The consent bar goes too, since
-  there is no longer any third party to consent to.
+  The access plan used to be a Google embed, which a sandboxed host refuses
+  while painting its own opaque "content blocked" notice inside the frame —
+  undetectable from script, so the preview had to strip the embed and its
+  consent bar by hand. The plan is now a static image bundled like every other
+  asset, so the preview shows exactly what the deployed site shows.
 */
-const hadMapSrc = / data-map-src="[^"]*"/.test(html);
-html = html.replace(/ data-map-src="[^"]*"/, '');
-
-if (hadMapSrc) {
-  html = html.replace(
-    /(<div\s+class="absolute inset-0 flex flex-col items-center justify-center gap-3[^"]*"\s*>)/,
-    // Ordered with an inline style, not a utility class: this markup is
-    // injected after Tailwind has compiled, so any class it has never seen
-    // elsewhere in the site simply does not exist in the stylesheet.
-    `$1<p style="order:99" class="max-w-xs text-sm leading-relaxed text-steel-light">
-      Aperçu&nbsp;: la carte n'est pas chargée ici, cette page ne peut appeler
-      aucun service externe. Elle s'affiche sur le site en ligne — le lien
-      ci-dessous ouvre le plan dès maintenant.
-    </p>`
-  );
-  report.push(['carte neutralisée (aperçu isolé)', 0]);
-}
-
-// The bar only ever existed to gate that embed.
-const hadConsent = /<div\s+data-consent/.test(html);
-html = html.replace(/<div\s+data-consent[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/, '');
-if (hadConsent) report.push(['bandeau de consentement retiré (aperçu)', 0]);
 
 /* ---------- gallery identity ---------- */
 

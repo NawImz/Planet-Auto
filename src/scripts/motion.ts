@@ -17,6 +17,7 @@ export function initMotion() {
   parallaxPhotos();
   countUp();
   staggerLists();
+  driveRoad();
 }
 
 /* ------------------------------------------------------------------ *
@@ -177,5 +178,33 @@ function staggerLists() {
       stagger: 0.075,
       scrollTrigger: { trigger: group, start: 'top 85%', once: true },
     });
+  });
+}
+
+/* ------------------------------------------------------------------ *
+ * The road markings move
+ *
+ * The two asphalt strips are the only literal piece of "voiture" on the page,
+ * and a painted line that never moves is wallpaper. Scrubbed against scroll
+ * rather than looped: the dashes advance because the visitor advances, which
+ * costs nothing while the section is off screen and stops the moment they do.
+ *
+ * The travel is a whole number of dash periods, read off the computed
+ * background-size rather than assumed: shifted by anything else, the pattern
+ * would land mid-dash and the strip would jump when the trigger resets.
+ * ------------------------------------------------------------------ */
+function driveRoad() {
+  gsap.utils.toArray<HTMLElement>('[data-road]').forEach((road) => {
+    const dash = parseFloat(getComputedStyle(road).backgroundSize) || 80;
+
+    gsap.fromTo(
+      road,
+      { backgroundPositionX: '0px' },
+      {
+        backgroundPositionX: `${-dash * 8}px`,
+        ease: 'none',
+        scrollTrigger: { trigger: road, start: 'top bottom', end: 'bottom top', scrub: 0.5 },
+      }
+    );
   });
 }

@@ -5,6 +5,7 @@
  *   node scripts/check.mjs [baseUrl]
  */
 import { chromium } from 'playwright';
+import { business } from '../src/config/business.js';
 
 const BASE = process.argv[2] ?? 'http://localhost:4321';
 const results = [];
@@ -127,64 +128,60 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PAT
   await ctx.close();
 }
 
-/* ---------- map and consent ---------- */
+/* ---------- access plan ---------- */
 {
   const ctx = await browser.newContext({ viewport: { width: 1100, height: 900 } });
   const page = await ctx.newPage();
-  const google = [];
+
+  // Now that the embed is gone, the bar is higher than "no Google before
+  // consent": the page must reach no external host at all.
+  const external = [];
   page.on('request', (r) => {
-    if (/google|gstatic|doubleclick/.test(r.url())) google.push(r.url());
+    const url = r.url();
+    if (!url.startsWith(BASE) && !url.startsWith('data:') && !url.startsWith('blob:')) {
+      external.push(url);
+    }
   });
 
   await page.goto(BASE, { waitUntil: 'networkidle' });
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(600);
+  check('aucune requête vers un tiers', external.length === 0, external[0]?.slice(0, 60) ?? '');
+  check('plus aucune iframe sur la page', !(await page.$('iframe')));
 
-  // The whole point of the gate: Google is not contacted at all until the
-  // visitor agrees. A regression here is a legal problem, not a visual one.
-  check('consentement : aucune requête Google avant le clic', google.length === 0, google[0]?.slice(0, 50) ?? '');
-  check('consentement : le bandeau s’affiche', await page.isVisible('[data-consent]'));
-  check('carte : aucune iframe avant consentement', !(await page.$('[data-map] iframe')));
+  // Scroll it into view: the plan is lazy-loaded like the photographs.
+  await page.evaluate(() => document.querySelector('#acces')?.scrollIntoView());
+  await page.waitForTimeout(900);
 
-  // The address must be readable while the map is not there.
+  const plan = await page.evaluate(() => {
+    const link = document.querySelector('[data-map]');
+    const img = link?.querySelector('img');
+    return {
+      href: link?.getAttribute('href') ?? '',
+      drawn: !!img && img.naturalWidth > 0,
+      alt: img?.getAttribute('alt') ?? '',
+      lazy: img?.getAttribute('loading') === 'lazy',
+    };
+  });
+
+  check('plan d’accès : l’image est réellement rendue', plan.drawn);
+  check('plan d’accès : chargé en lazy', plan.lazy);
+  check(
+    'plan d’accès : ouvre Google Maps',
+    plan.href.startsWith('https://www.google.com/maps/'),
+    plan.href.slice(0, 46)
+  );
+  // A map read by a screen reader has to say where the shop is, not "carte".
+  check(
+    'plan d’accès : l’alternative textuelle situe le garage',
+    plan.alt.includes('avenue de la République'),
+    plan.alt.slice(0, 60)
+  );
+
   const addressShown = await page.evaluate(() =>
     (document.querySelector('[data-map]')?.textContent ?? '').includes('80 avenue')
   );
-  check('carte : l’adresse reste lisible sans la carte', addressShown);
+  check('plan d’accès : l’adresse est écrite sous le plan', addressShown);
 
-  await page.click('[data-consent-accept]');
-  await page.waitForTimeout(800);
-  const src = await page.getAttribute('[data-map] iframe', 'src');
-  check(
-    'carte : l’acceptation charge l’embed Google',
-    !!src?.includes('output=embed') && !!src?.includes('Planet'),
-    src?.slice(0, 46)
-  );
-  check('consentement : le bandeau disparaît', !(await page.isVisible('[data-consent]')));
-
-  // The choice must survive a reload, or the bar becomes an irritant.
-  await page.reload({ waitUntil: 'networkidle' });
-  await page.waitForTimeout(700);
-  check('consentement : le choix est mémorisé', !(await page.isVisible('[data-consent]')));
-  check('carte : rechargée directement après accord', !!(await page.$('[data-map] iframe')));
-
-  await ctx.close();
-}
-
-/* ---------- refusal keeps the page usable ---------- */
-{
-  const ctx = await browser.newContext({ viewport: { width: 1100, height: 900 } });
-  const page = await ctx.newPage();
-  await page.goto(BASE, { waitUntil: 'networkidle' });
-  await page.click('[data-consent-refuse]');
-  await page.waitForTimeout(500);
-
-  check('refus : aucune iframe chargée', !(await page.$('[data-map] iframe')));
-  const link = await page.getAttribute('[data-map-fallback]', 'href');
-  check(
-    'refus : le lien vers Google Maps reste disponible',
-    !!link?.startsWith('https://www.google.com/maps/'),
-    link?.slice(0, 40)
-  );
   await ctx.close();
 }
 
@@ -298,9 +295,14 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PAT
       'dimanche non déclaré ouvert',
       !spec.some((s) => s.dayOfWeek.includes('Su'))
     );
+    // Compared against the config rather than a literal: a hardcoded closing
+    // time here is one more place a corrected Saturday has to be remembered,
+    // and the page already had two that disagreed.
+    const [satOpen, satClose] = business.hours.find((d) => d.dayCode === 'Sa').ranges[0];
     check(
-      'samedi 09:00–18:00 déclaré',
-      spec.some((s) => s.dayOfWeek.includes('Sa') && s.opens === '09:00' && s.closes === '18:00')
+      `samedi ${satOpen}–${satClose} déclaré comme dans business.js`,
+      spec.some((s) => s.dayOfWeek.includes('Sa') && s.opens === satOpen && s.closes === satClose),
+      spec.filter((s) => s.dayOfWeek.includes('Sa')).map((s) => `${s.opens}–${s.closes}`).join(', ')
     );
     // The markup must track reviewsVerified in both directions: declare the
     // real reviews once they are real, and declare nothing while they are not.

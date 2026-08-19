@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import { business } from '../config/business.js';
 import { formatRanges } from '../lib/hours.js';
 import rue from '../assets/rue-acces.jpeg';
+import plan from '../assets/plan-acces.png';
 import Icon from './Icon.astro';
 
 const { address, hours } = business;
@@ -10,21 +11,24 @@ const { address, hours } = business;
 const fullAddress = `${address.street}, ${address.postalCode} ${address.city}`;
 
 /*
-  Google Maps, at the client's request — it shows the business card, the photos
-  and the reviews inside the frame, which OpenStreetMap cannot.
+  A cropped capture of the Google listing, at the client's request, in place of
+  the live embed.
 
-  The embed is addressed by name and address rather than by coordinates, so it
-  resolves the actual listing instead of dropping an anonymous pin. The stored
-  coordinates still feed the geo field of the structured data.
+  It buys more than it gives up. The embed was the only third party on the
+  page: it set cookies the moment the iframe entered the document, which meant
+  a consent bar, a stored choice, and a grey box for every visitor who refused
+  or whose browser blocked it. A static plan always draws, costs one cached
+  request, and leaves the site with no third-party call at all.
 
-  It loads only once the visitor has accepted: Google sets cookies the instant
-  the iframe enters the document. See CookieConsent.astro.
+  What the frame loses — panning, zooming, the listing card — is exactly what
+  the "Itinéraire" button gives back, and that is what a visitor standing on
+  the pavement actually taps.
+
+  Regenerate with: node scripts/make-map.mjs <capture.jpg>
 */
 const query = encodeURIComponent(`${business.name}, ${fullAddress}`);
 const googleMaps = `https://www.google.com/maps/search/?api=1&query=${query}`;
 const waze = `https://waze.com/ul?q=${query}`;
-
-const mapEmbed = `https://maps.google.com/maps?q=${query}&z=16&hl=fr&output=embed`;
 ---
 
 <section id="acces" class="scroll-mt-20 border-t border-rule bg-paper py-section">
@@ -41,7 +45,8 @@ const mapEmbed = `https://maps.google.com/maps?q=${query}&z=16&hl=fr&output=embe
           {address.postalCode} {address.city}
         </address>
         <p class="mt-2 text-steel" data-reveal>
-          Sur l'avenue, avec du stationnement devant l'atelier.
+          Sur l'avenue, entre la rue Ampère et la rue Branly. Stationnement de
+          rue devant l'atelier.
         </p>
 
         <div class="mt-6 flex flex-wrap gap-3" data-reveal>
@@ -83,42 +88,44 @@ const mapEmbed = `https://maps.google.com/maps?q=${query}&z=16&hl=fr&output=embe
       </div>
 
       <div class="flex flex-col gap-6">
-        <div data-reveal>
-          {/* The address sits behind the frame, so a host that refuses the
-              embed leaves the shop's details showing rather than a grey box. */}
-          <div
-            class="relative h-[320px] overflow-hidden border border-rule bg-paper-deep lg:h-[400px]"
-            data-map
-            data-map-src={mapEmbed}
-            data-map-title={`Carte : ${business.name}, ${fullAddress}`}
+        {/* The whole plan is the link: on a map, tapping the map is the
+            gesture people already have. */}
+        <a
+          href={googleMaps}
+          target="_blank"
+          rel="noopener"
+          class="group relative block overflow-hidden border border-rule-strong bg-paper-deep transition-colors hover:border-ink"
+          data-map
+          data-reveal
+        >
+          <Image
+            src={plan}
+            alt={`Plan du quartier : ${business.name} est indiqué au ${address.street}, sur l'avenue, entre la rue Ampère et la rue Branly`}
+            widths={[560, 800, 1120]}
+            sizes="(min-width: 1024px) 560px, 100vw"
+            loading="lazy"
+            class="aspect-[4/3] w-full object-cover lg:aspect-[7/5]"
+          />
+
+          <span
+            class="absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 bg-surface/95 px-4 py-3 backdrop-blur-sm"
           >
-            <div class="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center">
-              <Icon name="pin" class="size-8 text-crimson" />
-              <p class="max-w-xs">
-                <span class="block font-display text-lg font-bold text-ink">{business.name}</span>
-                <span class="mt-1 block text-[0.95rem] text-steel">{fullAddress}</span>
-              </p>
-            </div>
+            <span class="min-w-0">
+              <span class="block truncate font-display text-[0.95rem] font-bold text-ink">
+                {business.name}
+              </span>
+              <span class="block truncate text-[0.85rem] text-steel">{fullAddress}</span>
+            </span>
+            <span class="inline-flex shrink-0 items-center gap-1.5 font-display text-[0.85rem] font-bold text-crimson">
+              Ouvrir
+              <Icon name="arrow" class="size-4 transition-transform group-hover:translate-x-0.5" />
+            </span>
+          </span>
+        </a>
 
-          </div>
-
-          {/* Outside the frame on purpose: whatever the embed does — loads,
-              refuses, or is blocked by the host — this link is still there. */}
-          <div class="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1">
-            <a
-              href={googleMaps}
-              target="_blank"
-              rel="noopener"
-              data-map-fallback
-              class="inline-flex min-h-11 items-center text-sm font-semibold text-crimson underline decoration-crimson/40 underline-offset-4 transition-colors hover:decoration-crimson"
-            >
-              Ouvrir dans Google Maps
-            </a>
-            <p class="text-sm text-steel-light">
-              Carte Google. Aucun autre service tiers sur ce site.
-            </p>
-          </div>
-        </div>
+        {/* Attribution : la capture vient de Google Maps, et leurs conditions
+            demandent que la mention reste visible. */}
+        <p class="-mt-4 text-right text-[0.78rem] text-steel-light">Plan&nbsp;: © Google</p>
 
         <div class="relative overflow-hidden" data-reveal data-parallax>
           <Image

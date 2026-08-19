@@ -19,8 +19,8 @@ import Icon from './Icon.astro';
           Ce qui revient<br />dans les avis
         </h2>
         <p class="mt-4 text-lg text-steel" data-reveal>
-          Quatre choses que nos clients citent le plus souvent — et qu'on
-          s'engage à tenir.
+          Quatre choses que nos clients citent le plus souvent. Ce sont leurs
+          mots, repris de la fiche Google — pas un argumentaire.
         </p>
 
         <div class="relative mt-10 overflow-hidden" data-reveal data-parallax>
@@ -42,14 +42,22 @@ import Icon from './Icon.astro';
             <div class="border-b border-rule py-7" data-reveal>
               <dt class="font-display text-[1.4rem] font-bold leading-snug">{benefit.title}</dt>
               <dd class="mt-2.5 text-steel">{benefit.description}</dd>
+              {/* Named so the claim stays attached to whoever actually made it. */}
+              <dd class="mt-2 text-[0.82rem] font-semibold uppercase tracking-[0.12em] text-steel-light">
+                Cité par {benefit.source}
+              </dd>
             </div>
           ))}
         </dl>
 
+        {/* Deux faits vérifiables, et rien d'autre : l'atelier ouvre au
+            niveau du trottoir (visible sur la devanture) et le comptoir prend
+            la carte. La mention « accessible PMR » qui figurait ici engageait
+            une conformité que personne n'a vérifiée. */}
         <div class="mt-8 flex flex-wrap gap-x-8 gap-y-3" data-reveal>
           <p class="flex items-center gap-2.5 text-[0.95rem] text-ink-soft">
             <Icon name="accessibility" class="size-5 shrink-0 text-crimson" />
-            Parking et entrée accessibles PMR
+            Entrée de plain-pied, au niveau du trottoir
           </p>
           <p class="flex items-center gap-2.5 text-[0.95rem] text-ink-soft">
             <Icon name="card" class="size-5 shrink-0 text-crimson" />

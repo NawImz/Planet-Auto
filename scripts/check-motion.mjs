@@ -149,6 +149,23 @@ const scrollTo = (page, y) =>
     els.filter((el) => Number(getComputedStyle(el).opacity) < 0.9).length
   );
   check('aucun élément resté invisible après défilement', hidden === 0, `${hidden} masqué(s)`);
+
+  // The road markings are scrubbed, so their position has to differ between
+  // two scroll offsets — and the strip has to stay drawn at both.
+  const roadAt = async (y) => {
+    await scrollTo(page, y);
+    await page.waitForTimeout(700);
+    return page.evaluate(() => {
+      const road = document.querySelector('[data-road]');
+      const st = getComputedStyle(road);
+      return { x: st.backgroundPositionX, image: st.backgroundImage !== 'none' };
+    });
+  };
+
+  const near = await roadAt(1400);
+  const far = await roadAt(4200);
+  check('le marquage au sol défile', near.x !== far.x, `${near.x} → ${far.x}`);
+  check('le marquage reste dessiné', near.image && far.image);
   await ctx.close();
 }
 

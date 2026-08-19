@@ -49,7 +49,7 @@ export const business = {
     { day: 'Mercredi', dayCode: 'We', ranges: [['09:00', '12:30'], ['14:00', '19:00']] },
     { day: 'Jeudi', dayCode: 'Th', ranges: [['09:00', '12:30'], ['14:00', '19:00']] },
     { day: 'Vendredi', dayCode: 'Fr', ranges: [['09:00', '12:30'], ['14:00', '19:00']] },
-    { day: 'Samedi', dayCode: 'Sa', ranges: [['09:00', '18:00']] },
+    { day: 'Samedi', dayCode: 'Sa', ranges: [['09:00', '17:30']] },
     { day: 'Dimanche', dayCode: 'Su', ranges: [] },
   ],
 
@@ -61,13 +61,28 @@ export const business = {
   paymentAccepted: ['Carte bancaire', 'Sans contact'],
   currenciesAccepted: 'EUR',
 
-  /** NON CONFIRMÉ — déduit, jamais transmis. Voir docs/VERACITE.md. */
-  priceRange: '€€',
+  /*
+    priceRange a été retiré : la fourchette « €€ » était une déduction, et une
+    fourchette de prix inventée dans le balisage est une donnée que Google
+    affiche telle quelle. Rien de mieux qu'une valeur fausse ici : pas de
+    valeur du tout.
+  */
 
-  /** Transmis dans le brief initial, jamais vérifié sur place. */
-  accessibility: {
-    parking: true,
-    entrance: true,
+  /**
+   * Ce que la photo de la devanture montre, et rien de plus : le rideau de
+   * l'atelier arrive au niveau du trottoir, sans marche. C'est un fait
+   * observable.
+   *
+   * L'ancienne formulation — « parking et entrée accessibles PMR » — n'était
+   * observable nulle part. « Accessible PMR » est un terme réglementaire
+   * (largeur de passage, cheminement, place réservée) : l'écrire engage le
+   * garage, et le stationnement devant l'atelier est du stationnement de rue,
+   * pas une place réservée. Voir docs/VERACITE.md.
+   */
+  access: {
+    stepFree: true,
+    /** Stationnement sur l'avenue, pas de parking privatif. */
+    streetParking: true,
   },
 
   social: [
@@ -76,23 +91,30 @@ export const business = {
 };
 
 /**
- * Les titres et les familles de pièces sont confirmés ; plusieurs détails de
- * description ne le sont pas — « devis avant travaux », « le jour même »,
- * « toutes marques », « géométrie ». Voir docs/VERACITE.md avant mise en ligne.
+ * Les titres et les familles de pièces sont confirmés par le client et par
+ * l'enseigne. Les descriptions ne décrivent plus que le métier : les
+ * engagements que j'y avais glissés — « devis avant travaux, aucune surprise à
+ * la facture », « remplacement le jour même », « toutes marques » — ont été
+ * retirés. Personne au garage ne les avait formulés, et ce sont exactement les
+ * phrases qu'un client cite au comptoir.
+ *
+ * « Géométrie » est retiré pour une autre raison : elle demande un banc
+ * spécifique que tous les ateliers n'ont pas. À remettre d'un mot si vous
+ * l'avez. Voir docs/VERACITE.md.
  */
 export const services = [
   {
     slug: 'reparation',
     title: 'Réparation',
     description:
-      "Mécanique générale, de la petite intervention à la remise en état moteur. Devis avant travaux, aucune surprise à la facture.",
+      "Mécanique générale, de la petite intervention à la remise en état moteur.",
     icon: 'wrench',
   },
   {
     slug: 'entretien',
     title: 'Entretien & révision',
     description:
-      'Vidange, filtres, courroie de distribution, contrôle des niveaux. Le suivi qui évite la panne coûteuse.',
+      'Vidange, filtres, courroie de distribution, contrôle des niveaux.',
     icon: 'oil',
   },
   {
@@ -113,7 +135,7 @@ export const services = [
     slug: 'freinage',
     title: 'Freinage',
     description:
-      'Plaquettes, disques, étriers, liquide de frein. Contrôle complet du circuit et remplacement en atelier le jour même.',
+      'Plaquettes, disques, étriers, liquide de frein. Contrôle du circuit et remplacement à l’atelier.',
     icon: 'disc',
   },
   {
@@ -127,7 +149,7 @@ export const services = [
     slug: 'pneus',
     title: 'Pneus & montage',
     description:
-      'Station de montage sur place : montage, équilibrage, permutation et géométrie. Toutes marques.',
+      'Station de montage sur place, comme l’indique l’enseigne : montage et équilibrage.',
     icon: 'tire',
   },
 ];
@@ -201,11 +223,11 @@ export const equipment = 'Équipements de garage et outillage professionnel.';
 export const faq = [
   {
     q: 'Quels sont les horaires de Planet Auto ?',
-    a: "Du lundi au vendredi de 9h à 12h30 puis de 14h à 19h, le samedi de 9h à 18h en continu. Fermé le dimanche.",
+    a: "Du lundi au vendredi de 9h à 12h30 puis de 14h à 19h, le samedi de 9h à 17h30 en continu. Fermé le dimanche.",
   },
   {
     q: 'Où se trouve le garage à Épinay-sur-Seine ?',
-    a: "Au 80 avenue de la République, 93800 Épinay-sur-Seine, avec du stationnement devant l'atelier.",
+    a: "Au 80 avenue de la République, 93800 Épinay-sur-Seine, sur l'avenue entre la rue Ampère et la rue Branly. On stationne dans la rue devant l'atelier.",
   },
   {
     q: 'Vendez-vous des pièces détachées aux particuliers ?',
@@ -225,11 +247,11 @@ export const faq = [
   },
   {
     q: 'Quels moyens de paiement acceptez-vous ?',
-    a: 'Carte bancaire, paiement sans contact et espèces.',
+    a: 'Carte bancaire et paiement sans contact.',
   },
   {
-    q: 'Le garage est-il accessible aux personnes à mobilité réduite ?',
-    a: "Oui, le parking et l'entrée sont de plain-pied et accessibles.",
+    q: "L'entrée est-elle de plain-pied ?",
+    a: "Oui, l'atelier ouvre directement sur le trottoir, sans marche, et on stationne sur l'avenue devant. Pour un besoin d'accessibilité particulier, un appel au 01 49 98 14 20 vaut mieux qu'une réponse générale : on vous dit précisément ce qu'il en est le jour de votre venue.",
   },
 ];
 
@@ -293,36 +315,48 @@ export const reviews = [
 ];
 
 /**
- * ⚠️ RÉDIGÉ, PAS TRANSMIS — voir docs/VERACITE.md
+ * Ce que les clients écrivent, reformulé — pas ce que le garage promet.
  *
- * Ces quatre engagements sont une reformulation de la ligne de brief
- * « réactivité, prix corrects, conseil personnalisé, équipe à l'écoute ». Ils
- * sont cohérents avec les avis Google, mais personne au garage ne les a
- * formulés ainsi.
+ * La version précédente inventait quatre engagements commerciaux (« le devis
+ * annoncé est le prix payé », « la plupart des interventions repartent le jour
+ * même »). Personne au garage ne les avait formulés, et ce sont exactement les
+ * phrases qu'un client cite au comptoir quand la promesse n'est pas tenue.
  *
- * Ce sont les phrases les plus persuasives du site, et donc celles qu'un
- * client citera au comptoir. À valider avec le garagiste avant publication,
- * ou à neutraliser.
+ * Chaque point ci-dessous s'appuie sur un avis Google transmis par le client,
+ * cité en commentaire. `source` porte le prénom du client : la section les
+ * présente comme une observation, jamais comme une garantie.
  */
 export const benefits = [
   {
-    title: "Votre voiture ne dort pas ici",
+    // Johanna : « tombé en panne de batterie et le garage m'a pris en charge
+    // immédiatement ». Isma : « prise en charge très rapidement, pas d'attente
+    // interminable comme ailleurs ».
+    title: 'La rapidité de prise en charge',
     description:
-      "La plupart des interventions courantes repartent le jour même. On vous annonce un délai réaliste dès l'accueil, pas une estimation optimiste que vous découvrirez fausse trois jours plus tard.",
+      "C'est le mot qui revient le plus : une panne annoncée le matin regardée dans la foulée, sans passer par une semaine de délai. Deux clients sur quatre en parlent en premier.",
+    source: 'Johanna, Isma',
   },
   {
-    title: 'Le devis annoncé est le prix payé',
+    // Meandra : plusieurs devis autour de 175 €, « il m'ont fait un devis qui a
+    // été divisé de moitié ». Johanna : « des tarifs qui défient toute
+    // concurrence ». Isma : « niveau prix, clairement imbattable ».
+    title: 'Le prix, une fois comparé',
     description:
-      "Si un imprévu apparaît en démontant, on vous appelle avant de toucher à quoi que ce soit. Vous ne découvrez jamais un supplément au moment de régler.",
+      "Plusieurs clients arrivent ici après avoir fait chiffrer ailleurs. C'est la comparaison qu'ils racontent — pas une promesse qu'on leur a faite au comptoir.",
+    source: 'Meandra, Johanna, Isma',
   },
   {
-    title: 'On vous explique, sans jargon',
+    // Meandra : « merci au vendeur pour sa franchise ».
+    title: 'La franchise du comptoir',
     description:
-      "Vous repartez en sachant ce qui a été changé et pourquoi. Et quand une pièce peut encore tenir une saison, on vous le dit au lieu de la remplacer.",
+      "Dire qu'une pièce peut encore tenir, ou qu'une réparation ne vaut pas son prix : c'est ce que les avis appellent la franchise du vendeur.",
+    source: 'Meandra',
   },
   {
-    title: 'Ouvert à tout le monde',
+    // Alyma : « on se sent accompagné du début à la fin, avec un vrai suivi ».
+    title: 'Le même interlocuteur du début à la fin',
     description:
-      "Parking et entrée de plain-pied, accessibles aux personnes à mobilité réduite. Carte bancaire et sans contact acceptés.",
+      "Le magasin et l'atelier sont sous le même toit : la personne qui vous conseille la pièce est celle qui suit le montage. Les avis parlent d'accompagnement, pas de guichet.",
+    source: 'Alyma',
   },
 ];

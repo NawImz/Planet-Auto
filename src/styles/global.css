@@ -174,6 +174,101 @@
     }
   }
 
+  /* ------------------------------------------------------------------
+     Le vocabulaire de l'atelier
+
+     Le brief demandait un aspect plus « voiture ». Il est pris dans trois
+     motifs empruntés au métier plutôt qu'à l'imagerie automobile générique :
+     le marquage au sol, la sculpture d'un pneu, la tôle boulonnée. Aucun
+     n'ajoute une couleur ni une police — le caractère vient de la matière,
+     pas d'un damier de course qui n'a rien à voir avec un garage de quartier.
+     ------------------------------------------------------------------ */
+
+  /*
+    1. Le marquage au sol.
+
+    Une bande d'enrobé traversée d'une ligne discontinue, posée aux deux
+    endroits où la page parle réellement de trajet : juste avant « Venir nous
+    voir », et à la sortie de la page. Deux fois, pas davantage — répété à
+    chaque section, le motif deviendrait un ornement.
+
+    Les pointillés défilent au scroll (voir motion.ts) : la route avance dans
+    le sens de la lecture.
+  */
+  .road {
+    /* One dash and one gap. Tiled by background-repeat rather than drawn as a
+       long repeating gradient: a tile is what lets the scrub shift the pattern
+       by whole periods and land back on itself, and it fills the strip at any
+       width instead of running out at one end. */
+    --dash: 5rem;
+    position: relative;
+    height: 2.25rem;
+    background-color: var(--color-ink);
+    background-image: linear-gradient(
+      to right,
+      var(--color-paper) 0 50%,
+      transparent 50% 100%
+    );
+    background-size: var(--dash) 3px;
+    background-position: 0 center;
+    background-repeat: repeat-x;
+  }
+
+  /*
+    2. La sculpture du pneu.
+
+    Une tuile de chevrons, posée très bas en opacité sur les fonds sombres :
+    une texture qu'on sent avant de la lire. Sur un fond clair elle salirait
+    le papier, donc elle ne sert que sur l'encre.
+  */
+  .tread {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .tread::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='6'%3E%3Cpath d='M-8 8 14 -14 M-8 28 14 6 M-8 48 14 26'/%3E%3Cpath d='M48 8 26 -14 M48 28 26 6 M48 48 26 26'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 40px 40px;
+  }
+
+  /*
+    3. La tôle boulonnée.
+
+    Quatre têtes de vis aux angles d'un panneau, dessinées en dégradés
+    radiaux : le motif ne coûte pas un élément de plus dans le DOM, et un
+    panneau encadré cesse de ressembler à une carte de site web.
+  */
+  .plate {
+    --bolt: var(--color-rule-strong);
+    --bolt-inset: 0.7rem;
+    background-image: radial-gradient(
+        circle at var(--bolt-inset) var(--bolt-inset),
+        var(--bolt) 0 2.5px,
+        transparent 2.5px
+      ),
+      radial-gradient(
+        circle at calc(100% - var(--bolt-inset)) var(--bolt-inset),
+        var(--bolt) 0 2.5px,
+        transparent 2.5px
+      ),
+      radial-gradient(
+        circle at var(--bolt-inset) calc(100% - var(--bolt-inset)),
+        var(--bolt) 0 2.5px,
+        transparent 2.5px
+      ),
+      radial-gradient(
+        circle at calc(100% - var(--bolt-inset)) calc(100% - var(--bolt-inset)),
+        var(--bolt) 0 2.5px,
+        transparent 2.5px
+      );
+  }
+
   .label {
     font-family: var(--font-display);
     font-size: 0.75rem;

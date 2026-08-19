@@ -39,6 +39,9 @@ const schema = {
     longitude: address.lng,
   },
   openingHoursSpecification: toOpeningHoursSpecification(hours),
+  // sameAs is how Google ties this site, the Google listing and the Facebook
+  // page together as one business rather than three unrelated results.
+  ...(business.social.length ? { sameAs: business.social.map((s) => s.href) } : {}),
   image: new URL('/og-image.jpg', SITE_URL).href,
   logo: new URL('/favicon.svg', SITE_URL).href,
   hasMap: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
@@ -60,12 +63,10 @@ const schema = {
     reviewCount: rating.count,
     bestRating: 5,
   },
-  areaServed: [
-    { '@type': 'City', name: 'Épinay-sur-Seine' },
-    { '@type': 'City', name: 'Saint-Denis' },
-    { '@type': 'City', name: 'Villetaneuse' },
-    { '@type': 'City', name: "L'Île-Saint-Denis" },
-  ],
+  // Only the town the shop is in. The neighbouring communes previously listed
+  // here were picked off a map, not given by the garage — declaring a service
+  // area to Google is a claim like any other.
+  areaServed: [{ '@type': 'City', name: address.city }],
   // Individual reviews are only declared once their text is the genuine
   // Google wording. Publishing placeholder copy as structured review data
   // would be feeding Google fabricated testimonials.

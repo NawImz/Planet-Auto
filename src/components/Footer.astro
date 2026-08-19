@@ -70,8 +70,9 @@ const links = [
                   href={item.href}
                   target="_blank"
                   rel="noopener"
-                  class="inline-flex size-11 items-center justify-center border border-white/20 transition-colors hover:border-white/60 hover:text-white"
+                  class="inline-flex size-11 items-center justify-center border border-white/25 text-white/85 transition-colors hover:border-white/60 hover:text-white"
                 >
+                  <Icon name={item.label.toLowerCase()} class="size-5" />
                   <span class="sr-only">{item.label}</span>
                 </a>
               </li>

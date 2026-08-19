@@ -53,19 +53,33 @@ export const business = {
     { day: 'Dimanche', dayCode: 'Su', ranges: [] },
   ],
 
-  paymentAccepted: ['Carte bancaire', 'Sans contact', 'Espèces'],
+  /**
+   * Confirmé par le client. « Espèces » figurait ici sans l'être : ajouté par
+   * déduction, pas transmis. Un client qui se présente avec du liquide sur la
+   * foi du site et se voit refuser, c'est une promesse rompue — retiré.
+   */
+  paymentAccepted: ['Carte bancaire', 'Sans contact'],
   currenciesAccepted: 'EUR',
+
+  /** NON CONFIRMÉ — déduit, jamais transmis. Voir docs/VERACITE.md. */
   priceRange: '€€',
 
+  /** Transmis dans le brief initial, jamais vérifié sur place. */
   accessibility: {
     parking: true,
     entrance: true,
   },
 
-  /** Left empty until the client confirms they have accounts. */
-  social: [],
+  social: [
+    { href: 'https://www.facebook.com/planetautoepinay', label: 'Facebook' },
+  ],
 };
 
+/**
+ * Les titres et les familles de pièces sont confirmés ; plusieurs détails de
+ * description ne le sont pas — « devis avant travaux », « le jour même »,
+ * « toutes marques », « géométrie ». Voir docs/VERACITE.md avant mise en ligne.
+ */
 export const services = [
   {
     slug: 'reparation',
@@ -278,6 +292,18 @@ export const reviews = [
   },
 ];
 
+/**
+ * ⚠️ RÉDIGÉ, PAS TRANSMIS — voir docs/VERACITE.md
+ *
+ * Ces quatre engagements sont une reformulation de la ligne de brief
+ * « réactivité, prix corrects, conseil personnalisé, équipe à l'écoute ». Ils
+ * sont cohérents avec les avis Google, mais personne au garage ne les a
+ * formulés ainsi.
+ *
+ * Ce sont les phrases les plus persuasives du site, et donc celles qu'un
+ * client citera au comptoir. À valider avec le garagiste avant publication,
+ * ou à neutraliser.
+ */
 export const benefits = [
   {
     title: "Votre voiture ne dort pas ici",

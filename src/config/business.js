@@ -85,7 +85,7 @@ export const services = [
     slug: 'pieces',
     title: 'Pièces détachées',
     description:
-      'Stock permanent en freinage, filtration, batteries, amortisseurs, pièces moteur, huiles et accessoires. Particuliers et professionnels.',
+      "Large stock en freinage, distribution, allumage, batteries, climatisation, filtration, liaison au sol, lubrifiants et consommables. Pour les véhicules légers, mais aussi poids lourds, travaux publics, agricole et marine.",
     icon: 'gear',
   },
   {
@@ -103,6 +103,13 @@ export const services = [
     icon: 'disc',
   },
   {
+    slug: 'electronique',
+    title: 'Électronique embarquée',
+    description:
+      "Réparation des calculateurs et de l'électronique de bord, plutôt que le remplacement systématique du bloc — souvent la différence entre une réparation et un devis à quatre chiffres.",
+    icon: 'scan',
+  },
+  {
     slug: 'pneus',
     title: 'Pneus & montage',
     description:
@@ -110,6 +117,61 @@ export const services = [
     icon: 'tire',
   },
 ];
+
+/**
+ * Le détail de l'offre comptoir, transmis par le client.
+ *
+ * Ces trois listes portent l'essentiel de l'argumentaire professionnel : la
+ * profondeur de gamme, les véhicules couverts, et les trois niveaux de qualité.
+ * Le dernier point n'est pas commercial mais réglementaire — un réparateur doit
+ * proposer des pièces de réemploi (art. L224-67 du Code de la consommation).
+ */
+export const partsFamilies = [
+  'Freinage',
+  'Distribution',
+  'Allumage',
+  'Batteries',
+  'Climatisation & thermique',
+  'Échappement',
+  'Éclairage',
+  'Électricité',
+  'Embrayage',
+  'Essuyage',
+  'Filtration',
+  'Injection',
+  'Liaison au sol',
+  'Lubrifiants',
+];
+
+/** Au-delà de la voiture : c'est ce qui distingue un vrai distributeur. */
+export const vehicleTypes = [
+  { code: 'VL', label: 'Véhicules légers' },
+  { code: 'PL', label: 'Poids lourds' },
+  { code: 'TP', label: 'Travaux publics' },
+  { code: 'AGRI', label: 'Agricole' },
+  { code: 'MARINE', label: 'Marine' },
+];
+
+/** Trois niveaux de prix pour la même réparation. */
+export const partsQuality = [
+  {
+    title: "Pièces d'origine",
+    description: "La référence constructeur, quand rien d'autre ne convient.",
+  },
+  {
+    title: 'Qualité équivalente à l’origine',
+    description:
+      "Le même équipementier que celui qui fournit le constructeur, sans le logo de la marque — et sans son prix.",
+  },
+  {
+    title: 'Pièces de réemploi',
+    description:
+      "Des pièces d'occasion contrôlées, l'option la plus économique. Un réparateur est tenu de vous la proposer.",
+  },
+];
+
+/** Le comptoir ne vend pas qu'aux véhicules : il équipe aussi les ateliers. */
+export const equipment = 'Équipements de garage et outillage professionnel.';
 
 /**
  * Questions fréquentes.
@@ -138,6 +200,14 @@ export const faq = [
   {
     q: 'Quelles réparations faites-vous à l’atelier ?',
     a: "Mécanique générale, entretien et révision, diagnostic électronique, freinage, ainsi que le montage et l'équilibrage de pneus sur place.",
+  },
+  {
+    q: 'Proposez-vous des pièces moins chères que celles du constructeur ?',
+    a: "Oui, trois niveaux existent pour une même réparation : la pièce d'origine constructeur, la pièce de qualité équivalente à l'origine — souvent le même équipementier, sans le logo ni le prix — et la pièce de réemploi, contrôlée et la plus économique. On vous présente les options avant de décider.",
+  },
+  {
+    q: 'Fournissez-vous des pièces pour poids lourds ou engins agricoles ?',
+    a: "Oui. Le stock couvre les véhicules légers, les poids lourds, les engins de travaux publics, le matériel agricole et la marine. Le comptoir fournit également des équipements de garage et de l'outillage professionnel.",
   },
   {
     q: 'Quels moyens de paiement acceptez-vous ?',

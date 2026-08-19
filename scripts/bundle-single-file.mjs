@@ -103,29 +103,40 @@ if (icoRef) {
 /* ---------- map ---------- */
 
 /*
-  Strip the map embed out of the preview.
+  Neutralise the map in the preview.
 
-  A sandboxed host refuses it and paints its own opaque "content blocked"
-  notice inside the frame — which covers the address sitting behind it and
-  reads as a broken site. Nothing in the page can prevent that: the refusal
-  happens inside the frame, where the parent document has no reach.
+  A sandboxed host refuses the embed and paints its own opaque "content
+  blocked" notice inside the frame, which reads as a broken site. The frame
+  cannot be talked out of that from the parent document, and the refusal is not
+  detectable from script either.
 
-  So the preview simply does not carry the iframe. The deployed site keeps it;
-  here the frame is left showing the address that was already behind it, plus a
-  line saying why the map is absent.
+  The embed is no longer written into the HTML — it is created by consent.ts
+  from data-map-src — so removing that one attribute is what stops it: the
+  loader finds no source and does nothing. The consent bar goes too, since
+  there is no longer any third party to consent to.
 */
-const mapFrame = html.match(/<iframe[^>]*openstreetmap[^>]*>\s*<\/iframe>/);
-if (mapFrame) {
+const hadMapSrc = / data-map-src="[^"]*"/.test(html);
+html = html.replace(/ data-map-src="[^"]*"/, '');
+
+if (hadMapSrc) {
   html = html.replace(
-    mapFrame[0],
-    `<p class="absolute inset-x-0 bottom-0 px-6 pb-5 text-center text-sm leading-relaxed text-steel-light">
+    /(<div\s+class="absolute inset-0 flex flex-col items-center justify-center gap-3[^"]*"\s*>)/,
+    // Ordered with an inline style, not a utility class: this markup is
+    // injected after Tailwind has compiled, so any class it has never seen
+    // elsewhere in the site simply does not exist in the stylesheet.
+    `$1<p style="order:99" class="max-w-xs text-sm leading-relaxed text-steel-light">
       Aperçu&nbsp;: la carte n'est pas chargée ici, cette page ne peut appeler
       aucun service externe. Elle s'affiche sur le site en ligne — le lien
       ci-dessous ouvre le plan dès maintenant.
     </p>`
   );
-  report.push(['carte remplacée par une note (aperçu isolé)', 0]);
+  report.push(['carte neutralisée (aperçu isolé)', 0]);
 }
+
+// The bar only ever existed to gate that embed.
+const hadConsent = /<div\s+data-consent/.test(html);
+html = html.replace(/<div\s+data-consent[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/, '');
+if (hadConsent) report.push(['bandeau de consentement retiré (aperçu)', 0]);
 
 /* ---------- gallery identity ---------- */
 
